@@ -35,10 +35,18 @@ echo "### Installing other gem dependencies..."
 bundle install
 
 echo "### Installing Puppet dependencies..."
+puppet module install ripienaar-module_data
 librarian-puppet install
+ln -s /etc/puppet/code/modules/rk_tomcat /root/rk_tomcat
 
 echo "### Running Puppet agent..."
-puppet apply --modulepath "modules:${HOME}" -e 'class { "rk_tomcat": }'
+mkdir -p /etc/hiera
+cat > /etc/hiera/hiera.yaml << 'HIERA'
+---
+:backends:
+  - module_data
+HIERA
+puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" -e 'class { "rk_tomcat": }'
 
 echo "### Disabling Puppet agent..."
 puppet resource service puppet ensure=stopped enable=false
