@@ -1,3 +1,4 @@
 .env
 .tmp/
 modules/
+data/secrets.yaml

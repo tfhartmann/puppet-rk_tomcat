@@ -22,10 +22,14 @@ git clone https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
 cd rk_tomcat
 
 echo "### Configuring RubyGems..."
-echo '--nodocument --bindir /usr/local/bin' >> /root/.gemrc
+yum -y install ruby-devel glibc-devel gcc
+cat > /root/.gemrc << 'GEMRC'
+---
+install: --nodocument --bindir /usr/local/bin
+GEMRC
 
 echo "### Installing Bundler..."
-gem install bundler
+gem install io-console bundler
 
 echo "### Installing other gem dependencies..."
 bundle install

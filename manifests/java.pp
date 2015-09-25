@@ -4,7 +4,7 @@ class rk_tomcat::java (
   $system_java,
   $zulu_package,
   $zulu_version,
-) inherits rk_tomcat::params {
+) {
 
   # building variables
   $zulu_rpm = "zulu${zulu_version}-x86lx64.rpm"
