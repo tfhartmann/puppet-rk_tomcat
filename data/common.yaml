@@ -1,9 +1,5 @@
 ---
 # Java
-rk_tomcat::java::system_java:
-    - java-1.7.0-openjdk
-    - java-1.7.0-openjdk-devel
-
 rk_tomcat::java::zulu_package: zulu-8
 rk_tomcat::java::zulu_version: 1.8.0_60-8.9.0.4
 

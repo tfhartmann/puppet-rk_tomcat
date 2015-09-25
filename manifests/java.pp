@@ -1,7 +1,6 @@
 # rk_tomcat::java
 #
 class rk_tomcat::java (
-  $system_java,
   $zulu_package,
   $zulu_version,
 ) {
@@ -17,9 +16,5 @@ class rk_tomcat::java (
     command   => "yum -y localinstall $zulu_rpm_path",
     logoutput => 'on_failure',
     unless    => "rpm -q $zulu_package",
-  } ->
-
-  # uninstall system Java
-  package { $system_java: ensure => 'absent' }
-
+  }
 }
