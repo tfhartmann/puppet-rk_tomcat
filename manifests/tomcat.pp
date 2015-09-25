@@ -16,9 +16,9 @@ class rk_tomcat::tomcat (
   } ->
 
   ::tomcat::service { $tomcat_instance:
-    use_jsvc     => false,
-    use_init     => true,
-    service_name => $tomcat_svc,
-    service_name => 'running',
+    use_jsvc       => false,
+    use_init       => true,
+    service_name   => $tomcat_svc,
+    service_ensure => 'running',
   }
 }
