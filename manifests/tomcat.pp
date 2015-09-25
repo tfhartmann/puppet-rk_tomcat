@@ -12,7 +12,7 @@ class rk_tomcat::tomcat (
   } ->
 
   ::tomcat::instance { $tomcat_instance:
-    'package_name' => $tomcat_pkg,
+    package_name => $tomcat_pkg,
   } ->
 
   ::tomcat::service { $tomcat_instance:
