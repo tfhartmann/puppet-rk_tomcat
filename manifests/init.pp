@@ -1,7 +1,7 @@
 # Class: rk_tomcat
 # ===========================
 #
-# Full description of class rk_tomcat here.
+# Deploy the Runkeeper Tomcat platform onto an instance.
 #
 # Parameters
 # ----------
@@ -35,7 +35,7 @@
 # Authors
 # -------
 #
-# Author Name <author@domain.com>
+# Steve Huff <shuff@runkeeper.com>
 #
 # Copyright
 # ---------
@@ -44,5 +44,8 @@
 #
 class rk_tomcat {
 
+  class { 'rk_tomcat::java': } ->
+
+  class { 'rk_tomcat::tomcat': }
 
 }
