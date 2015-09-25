@@ -10,9 +10,6 @@ class rk_tomcat::java (
   $zulu_rpm = "zulu${zulu_version}-x86lx64.rpm"
   $zulu_rpm_path = "/root/${zulu_rpm}"
 
-  # uninstall system Java
-  package { $system_java: ensure => 'absent' } ->
-
   # install Zulu
   file { $zulu_rpm_path:
     ensure => 'present',
@@ -27,6 +24,9 @@ class rk_tomcat::java (
     command   => "yum -y localinstall $zulu_rpm_path",
     logoutput => 'on_failure',
     unless    => "rpm -q $zulu_package",
-  }
+  } ->
+
+  # uninstall system Java
+  package { $system_java: ensure => 'absent' }
 
 }
