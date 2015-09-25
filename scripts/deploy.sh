@@ -37,7 +37,7 @@ bundle install
 echo "### Installing Puppet dependencies..."
 puppet module install ripienaar-module_data
 librarian-puppet install
-ln -s /etc/puppet/code/modules/rk_tomcat /root/rk_tomcat
+ln -s /root/rk_tomcat /etc/puppet/code/modules/rk_tomcat
 
 echo "### Running Puppet agent..."
 mkdir -p /etc/hiera
