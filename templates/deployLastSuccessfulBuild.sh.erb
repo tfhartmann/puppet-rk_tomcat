@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+<%- @artifacts.each_value do |war| -%>
+rm -f <%= @catalina_home %>/webapps/<%= war %>
+<%- end -%>
+sleep 15
+service <%= @tomcat_svc %> stop
+<%- @artifacts.each do |artifact, war| -%>
+  curl -v -L -o <%= @catalina_home %>/webapps/<%= war %> -u <%= @deploy_user %>:<%= @deploy_password %> https://build.rkstaging.com/jenkins/job/Master/lastSuccessfulBuild/artifact/<%= artifact %>/target/<%= war %>
+<%- end -%>
+curl -v -L -o <%= @catalina_home %>/webapps/RunKeeper.war -u rkadmin:KendallSquare1 https://build.rkstaging.com/jenkins/job/Master/lastSuccessfulBuild/artifact/webapi/target/RunKeeper.war
+<%- @artifacts.each_value do |war| -%>
+chown <%= @tomcat_user %>:<%= @tomcat_group %> <%= @catalina_home %>/webapps/<%= war %>
+<%- end -%>
+service <%= @tomcat_svc %> start
