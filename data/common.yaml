@@ -10,6 +10,3 @@ rk_tomcat::tomcat::tomcat_pkg: tomcat7
 rk_tomcat::tomcat::tomcat_svc: tomcat7
 rk_tomcat::tomcat::tomcat_user: tomcat
 rk_tomcat::tomcat::tomcat_group: tomcat
-rk_tomcat::tomcat::artifacts:
-    dashboard: ROOT.war
-    webapi: RunKeeper.war

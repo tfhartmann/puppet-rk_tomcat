@@ -1,0 +1,40 @@
+overrides = {
+
+    fitnesskeeper.device = {
+        CloudantDeviceStore = {
+            cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-device<%= @cloudant_suffix -%>"
+            documentType = "fitnesskeeper.core.entity.DeviceEntity"
+        }
+    }
+
+    fitnesskeeper.notification = {
+        CloudantPushNotificationStore = {
+            cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-push_notification<%= @cloudant_suffix -%>"
+            documentType = "fitnesskeeper.core.entity.PushNotificationEntity"
+        }
+        CloudantPushNotificationTokenStore = {
+            cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-push_notification_token<%= @cloudant_suffix -%>"
+            documentType = "fitnesskeeper.core.entity.PushNotificationTokenEntity"
+        }
+        CloudantScheduledPushNotificationStore = {
+            cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-scheduled_push_notification<%= @cloudant_suffix -%>"
+            documentType = "fitnesskeeper.core.entity.PushNotificationEntity"
+        }
+    }
+
+   fitnesskeeper.measurement = {
+        FitnessKeeperWeightMeasurementService = {
+            cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-weight_measurements<%= @cloudant_suffix -%>"
+            documentType = "fitnesskeeper.core.entity.measurement.weight.AbstractWeightMeasurementEntity"
+        }
+    }
+
+    runkeeper.apps = {
+      ForeignAuthorizationManager = {
+         cloudantURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-foreign_credentials<%= @cloudant_suffix -%>"
+         documentType = "runkeeper.apps.ForeignCredentials"
+      }
+    }
+}
+
+stage = ${overrides}

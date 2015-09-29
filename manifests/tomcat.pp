@@ -2,6 +2,10 @@
 #
 class rk_tomcat::tomcat (
   $artifacts,
+  $cloudant_user,
+  $cloudant_password,
+  $cloudant_host,
+  $cloudant_suffix,
   $deploy_user,
   $deploy_password,
   $tomcat_instance,
@@ -16,7 +20,8 @@ class rk_tomcat::tomcat (
     ensure => 'present',
     owner  => 'root',
     group  => 'root',
-    mode   => '0640'
+    mode   => '0640',
+    notify => Service[$tomcat_svc],
   }
 
   # install Tomcat package
@@ -32,6 +37,11 @@ class rk_tomcat::tomcat (
   file { 'deployLastSuccessfulBuild.sh':
     path    => "${catalina_home}/bin/deployLastSuccessfulBuild.sh",
     content => template('rk_tomcat/deployLastSuccessfulBuild.sh.erb'),
+  } ->
+
+  file { 'CloudantConfiguration.conf':
+    path    => "${catalina_home}/conf/CloudantConfiguration.conf",
+    content => template('rk_tomcat/CloudantConfiguration.conf.erb'),
   } ->
 
   ::tomcat::service { $tomcat_instance:
