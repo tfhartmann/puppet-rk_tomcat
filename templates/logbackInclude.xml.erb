@@ -1,0 +1,156 @@
+<included>
+
+   <property name="appName"           value="${CONTEXT_NAME}" />
+   <property name="logFileDir"        value="<%= @catalina_home %>/logs" />
+   <property name="filePattern"       value="[%d{ISO8601}] %cn {%thread} [%level] %logger - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx" />
+   <property name="logentriesPattern" value="[%d{ISO8601}] %cn {%thread} [%level] %logger - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}} [<%= @log_identifier %>]%n" />
+
+   <!--********************************************************************************************-->
+   <!-- Define our appenders                                                                       -->
+   <!--********************************************************************************************-->
+
+   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+         <pattern>${filePattern}</pattern>
+      </encoder>
+   </appender>
+
+   <!-- Sometimes we might run code without an application context, i.e. unit tests, or if someone forgets to setup -->
+   <if condition='property("appName").contains("default")'>
+      <then>
+         <property name="appenderRef" value="STDOUT" />
+      </then>
+      <else>
+         <property name="appenderRef" value="FILE" />
+
+         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${logFileDir}/logback.${appName}.log.txt</file>
+            <append>true</append>
+            <encoder>
+               <pattern>${filePattern}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+               <fileNamePattern>${logFileDir}/logback.${appName}.log.%d{yyyy-MM-dd}.txt</fileNamePattern>
+               <cleanHistoryOnStart>true</cleanHistoryOnStart>
+               <maxHistory>7</maxHistory>
+            </rollingPolicy>
+         </appender>
+
+      </else>
+   </if>
+
+   <appender name="NEWRELIC" class="fitnesskeeper.core.logging.NewRelicAppender">
+       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+           <level>ERROR</level>
+       </filter>
+   </appender>
+
+   <appender name="ANALYTICS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+       <Debug>False</Debug>
+       <Token><%= @logentries_analytics_token %></Token>
+       <Ssl>False</Ssl>
+       <facility>USER</facility>
+       <layout>
+          <pattern><%= @log_identifier %> %cn: %msg%n</pattern>
+       </layout>
+   </appender>
+
+   <appender name="APPLOGS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+       <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+          <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
+             <expression>try { Class.forName("fitnesskeeper.core.logging.InternalUsersFilter"); return true;  } catch (Exception ex) { return false; }</expression>
+          </evaluator>
+          <OnMatch>NEUTRAL</OnMatch>
+          <OnMismatch>DENY</OnMismatch>
+       </filter>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+          <level>WARN</level>
+          <onMatch>ACCEPT</onMatch>
+          <onMismatch>NEUTRAL</onMismatch>
+       </filter>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+          <level>ERROR</level>
+          <onMatch>ACCEPT</onMatch>
+          <onMismatch>NEUTRAL</onMismatch>
+       </filter>
+       <filter class="fitnesskeeper.core.logging.InternalUsersFilter" />
+       <Debug>False</Debug>
+       <Token><%= @logentries_applogs_token %></Token>
+       <Ssl>False</Ssl>
+       <facility>USER</facility>
+       <layout>
+          <pattern>${logentriesPattern}</pattern>
+       </layout>
+   </appender>
+
+   <appender name="APPLOGS_ADMIN_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+       <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+          <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
+             <expression>try { if ("${environment}".equals("PRODUCTION") &amp;&amp; "${appName}".equals("admin")) { return true; } else { return false; } } catch (Exception ex) { return false; }</expression>
+          </evaluator>
+          <OnMatch>NEUTRAL</OnMatch>
+          <OnMismatch>DENY</OnMismatch>
+       </filter>
+       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+           <level>INFO</level>
+       </filter>
+       <Debug>False</Debug>
+       <Token><%= @logentries_applogs_token %></Token>
+       <Ssl>False</Ssl>
+       <facility>USER</facility>
+       <layout>
+          <pattern>${logentriesPattern}</pattern>
+       </layout>
+   </appender>
+
+   <appender name="REDIS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+       <Debug>False</Debug>
+       <Token><%= @logentries_applogs_token %></Token>
+       <Ssl>False</Ssl>
+       <facility>USER</facility>
+       <layout>
+          <pattern>${logentriesPattern}</pattern>
+       </layout>
+   </appender>
+
+   <!--********************************************************************************************-->
+   <!-- Unless otherwise specified all loggers will use the root logger level                      -->
+   <!--********************************************************************************************-->
+
+   <root level="INFO">
+      <appender-ref ref="${appenderRef}" />
+      <appender-ref ref="NEWRELIC" />
+
+      <appender-ref ref="APPLOGS_LOGENTRIES" />
+
+   </root>
+
+   <!--********************************************************************************************-->
+   <!-- Control logging for our own code                                                           -->
+   <!--********************************************************************************************-->
+
+   <logger name="runkeeper.analytics.AnalyticsLogger" additivity="false">
+      <level value="debug"/>
+      <appender-ref ref="ANALYTICS_LOGENTRIES"/>
+   </logger>
+
+   <logger name="fitnesskeeper" level="DEBUG"/>
+   <logger name="runkeeper" level="DEBUG"/>
+   <logger name="runkeeper.oldcache.RedisCacheAdapter" additivity="true">
+      <level value="INFO"/>
+      <appender-ref ref="REDIS_LOGENTRIES"/>
+   </logger>
+
+   <!-- this thing gets noisy because we override a class in the nevado JMS lib which has logging -->
+   <logger name="runkeeper.jms.connector.AmazonAwsSQSConnector" level="OFF"/>
+
+   <!--********************************************************************************************-->
+   <!-- Control logging for other stuff which we do not want to use the default root logging level -->
+   <!--********************************************************************************************-->
+
+   <logger name="net.sourceforge.stripes" level="OFF"/>
+   <logger name="org.mybatis" level="OFF"/>
+   <logger name="org.apache.commons.httpclient" level="OFF"/>
+   <logger name="com.amazonaws" level="ERROR"/>
+
+</included>
