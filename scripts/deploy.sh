@@ -19,6 +19,11 @@ cd ~
 echo "### Cloning Tomcat platform configuration..."
 git clone https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
 
+if [ ! -r "rk_tomcat/data/secrets.yaml" ]; then
+  echo "Populate the secrets.yaml file and then run $0 again."
+  exit 0
+fi
+
 cd rk_tomcat
 
 echo "### Configuring RubyGems..."

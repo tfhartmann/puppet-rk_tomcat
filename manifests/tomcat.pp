@@ -30,8 +30,8 @@ class rk_tomcat::tomcat (
 
   # populate config files by hand, ugh
   file { 'deployLastSuccessfulBuild.sh':
-    path     => "${catalina_home}/bin/deployLastSuccessfulBuild.sh",
-    template => 'rk_tomcat/deployLastSuccessfulBuild.sh.erb',
+    path    => "${catalina_home}/bin/deployLastSuccessfulBuild.sh",
+    content => template('rk_tomcat/deployLastSuccessfulBuild.sh.erb'),
   } ->
 
   ::tomcat::service { $tomcat_instance:
