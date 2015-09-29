@@ -18,8 +18,8 @@ class rk_tomcat::tomcat (
 
   File {
     ensure => 'present',
-    owner  => 'root',
-    group  => 'root',
+    owner  => 'tomcat',
+    group  => 'tomcat',
     mode   => '0640',
     notify => Service[$tomcat_svc],
   }
@@ -37,6 +37,9 @@ class rk_tomcat::tomcat (
   file { 'deployLastSuccessfulBuild.sh':
     path    => "${catalina_home}/bin/deployLastSuccessfulBuild.sh",
     content => template('rk_tomcat/deployLastSuccessfulBuild.sh.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
   } ->
 
   file { 'CloudantConfiguration.conf':
