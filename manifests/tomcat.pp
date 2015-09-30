@@ -112,6 +112,11 @@ class rk_tomcat::tomcat (
     content => template('rk_tomcat/server.xml.erb'),
   } ->
 
+  file { 'tomcat7.conf':
+    path    => "${catalina_home}/conf/tomcat7.conf",
+    content => template('rk_tomcat/tomcat7.conf.erb'),
+  } ->
+
   ::tomcat::service { $tomcat_instance:
     use_jsvc       => false,
     use_init       => true,
