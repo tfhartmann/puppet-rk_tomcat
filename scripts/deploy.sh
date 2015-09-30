@@ -40,9 +40,11 @@ echo "### Installing other gem dependencies..."
 bundle install
 
 echo "### Installing Puppet dependencies..."
+export PUPPET_MODULE_DIR='/etc/puppetlabs/code/modules'
 yum -y install ruby20-augeas
+librarian-puppet config path "$PUPPET_MODULE_DIR" --global
 librarian-puppet install
-ln -s /root/rk_tomcat /etc/puppetlabs/code/modules/rk_tomcat
+ln -s /root/rk_tomcat "${PUPPET_MODULE_DIR}/rk_tomcat"
 
 echo "### Running Puppet agent..."
 mkdir -p /etc/hiera
