@@ -41,7 +41,6 @@ bundle install
 
 echo "### Installing Puppet dependencies..."
 yum -y install ruby20-augeas
-puppet module install ripienaar-module_data
 librarian-puppet install
 ln -s /root/rk_tomcat /etc/puppetlabs/code/modules/rk_tomcat
 
