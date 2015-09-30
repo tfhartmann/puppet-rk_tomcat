@@ -18,6 +18,7 @@ rk_tomcat::tomcat::postgres:
         host: runkeeper-stage1.ca4bhrmkhch7.us-east-1.rds.amazonaws.com
         port: 5432
         max_conn: 10
+rk_tomcat::tomcat::postgres_driver: postgresql-9.4-1203.jdbc42
 rk_tomcat::tomcat::redis_host: 1rkr1jhjiso5jaf5k.yv323k.ng.0001.use1.cache.amazonaws.com
 rk_tomcat::tomcat::redis_port: 6379
 rk_tomcat::tomcat::redis_pushnotif_db: 11

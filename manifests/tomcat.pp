@@ -10,6 +10,7 @@ class rk_tomcat::tomcat (
   $deploy_user,
   $deploy_password,
   $logentries_tokens,
+  $postgres_driver,
   $redis_host,
   $redis_port,
   $redis_pushnotif_db,
@@ -48,6 +49,7 @@ class rk_tomcat::tomcat (
       'maxidle'   => $values[max_conn],
     }
   }
+  $postgres_driver_jarfile = "${postgres_driver}.jar}
 
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
@@ -115,6 +117,14 @@ class rk_tomcat::tomcat (
   file { 'tomcat7.conf':
     path    => "${catalina_home}/conf/tomcat7.conf",
     content => template('rk_tomcat/tomcat7.conf.erb'),
+  } ->
+
+  file { 'postgres_driver':
+    path   => "${catalina_home}/lib/${postgres_driver_jarfile}",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///modules/rk_tomcat/${postgres_driver_jarfile}",
   } ->
 
   ::tomcat::service { $tomcat_instance:
