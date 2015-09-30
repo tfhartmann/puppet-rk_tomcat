@@ -35,8 +35,10 @@ class rk_tomcat::tomcat (
   }
 
   # Postgres
-  $postgres = lookup('rk_tomcat::tomcat::postgres', { 'merge' => { 'strategy' => 'deep', 'merge_hash_arrays' => true }, 'value_type' => Hash })
-  $postgres_resources = $postgres.map |$key,$values| {
+  $postgres = lookup('rk_tomcat::tomcat::postgres', { 'value_type' => Hash })
+  $postgres_secrets = lookup('rk_tomcat::tomcat::postgres_secrets', { 'value_type' => Hash })
+  $postgres_merged = merge_hashes($postgres, $postgres_secrets)
+  $postgres_resources = $postgres_merged.map |$key,$values| {
     {
       'name'      => $values[name],
       'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}",
@@ -47,7 +49,7 @@ class rk_tomcat::tomcat (
     }
   }
 
-  notify { "postgres: $postgres": }
+  notify { "postgres: $postgres_merged": }
 
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
