@@ -58,4 +58,10 @@ puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules
 echo "### Disabling Puppet agent..."
 puppet resource service puppet ensure=stopped enable=false
 
+echo "### Cleaningup..."
+cd ..
+rm -rf rk_tomcat
+rm -rf /etc/puppetlabs/code/modules/*
+yum clean all
+
 echo "### Deploy complete."
