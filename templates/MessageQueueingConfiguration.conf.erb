@@ -1,0 +1,14 @@
+overrides = {
+   queueNamePrefix = "<%= @queue_identifier -%>"
+   subscriberMaxThreads = 40
+   subscriberAddWorkerThresholdSeconds = 10
+   subscriberWaitTimeoutMillis = 60000
+   sqsAccessKey = "<%= @sqs_access_key -%>"
+   sqsSecretKey = "<%= @sqs_secret_key -%>"
+   messageDeduplicationURI = "redis://<%= @redis_queue_host -%>:<%= @redis_queue_port -%>/<%= @redis_queue_db -%>"
+   messageDeduplicationMaxConnections = 15
+   messageDeduplicationConnectionTimeout = 4000
+   messageDeduplicationTTL = 600
+}
+
+stage = ${overrides}
