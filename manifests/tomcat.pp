@@ -49,8 +49,6 @@ class rk_tomcat::tomcat (
     }
   }
 
-  notify { "postgres: $postgres_merged": }
-
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
   $logentries_applogs_token = $logentries_tokens['applogs']
