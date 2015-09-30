@@ -10,12 +10,6 @@ echo "### Deploying..."
 cd rk_tomcat
 
 echo "### Running Puppet agent..."
-mkdir -p /etc/hiera
-cat > /etc/hiera/hiera.yaml << 'HIERA'
----
-:backends:
-  - module_data
-HIERA
 puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" -e 'class { "rk_tomcat": mode => "deploy" }'
 
 echo "### Disabling Puppet agent..."

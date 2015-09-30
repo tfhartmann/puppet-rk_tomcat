@@ -6,30 +6,25 @@
 # Parameters
 # ----------
 #
-# Document parameters here.
-#
-# * `sample parameter`
-# Explanation of what this parameter affects and what it defaults to.
-# e.g. "Specify one or more upstream ntp servers as an array."
-#
-# Variables
-# ----------
-#
-# Here you should define a list of variables that this module would require.
-#
-# * `sample variable`
-#  Explanation of how this variable affects the function of this class and if
-#  it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#  External Node Classifier as a comma separated list of hostnames." (Note,
-#  global variables should be avoided in favor of class parameters as
-#  of Puppet 2.6.)
+# * `mode`
+# This module is to be used in both phases of a two-phase platform automation
+# process.  The "provision" phase starts with an otherwise unmodified Amazon
+# Linux instance and ends when that instance is ready to be imaged as a gold
+# master AMI, _i.e._ all the customizations that are not application-specific
+# have been applied.  The "deploy" phase starts with an instance cloned from a
+# gold master AMI and ends when that instance is ready to be imaged as a
+# release AMI, _i.e._ all application-specific customizations have been
+# applied, one or more applications have been deployed, and new instances
+# cloned from the AMI will come up in production-ready state without any
+# additional intervention.
+# Valid values are "provision" and "deploy" (the default).
 #
 # Examples
 # --------
 #
 # @example
 #    class { 'rk_tomcat':
-#      servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
+#      mode => "provision",
 #    }
 #
 # Authors
@@ -40,7 +35,9 @@
 # Copyright
 # ---------
 #
-# Copyright 2015 Your name here, unless otherwise noted.
+# Copyright 2015 FitnessKeeper Inc., unless otherwise noted.
+#
+# This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 #
 class rk_tomcat (
   $mode = 'deploy'
