@@ -127,6 +127,22 @@ class rk_tomcat::tomcat (
     source => "puppet:///modules/rk_tomcat/${postgres_driver_jarfile}",
   } ->
 
+  file { 'provision.sh':
+    path   => '/root/provision.sh',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/rk_tomcat/provision.sh',
+  } ->
+
+  file { 'deploy.sh':
+    path   => '/root/deploy.sh',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/rk_tomcat/deploy.sh',
+  } ->
+
   ::tomcat::service { $tomcat_instance:
     use_jsvc       => false,
     use_init       => true,

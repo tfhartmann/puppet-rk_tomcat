@@ -42,10 +42,25 @@
 #
 # Copyright 2015 Your name here, unless otherwise noted.
 #
-class rk_tomcat {
+class rk_tomcat (
+  $mode = 'deploy'
+) {
+  validate_re($mode, '^(provision|deploy)$')
 
-  class { 'rk_tomcat::java': } ->
+  if ( $mode == 'provision' ) {
+    class { 'rk_tomcat::java':
+      before => Class[rk_tomcat::tomcat],
+    }
+  }
 
   class { 'rk_tomcat::tomcat': }
+
+  if ( $mode == 'deploy' ) {
+    class { 'rk_tomcat::signal':
+      require => Class[rk_tomcat::tomcat],
+    } ->
+
+    class { 'rk_tomcat::deploy': }
+  }
 
 }
