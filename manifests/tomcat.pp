@@ -34,6 +34,19 @@ class rk_tomcat::tomcat (
     $queue_identifier = ''
   }
 
+  # Postgres
+  $postgres = lookup('postgres', { 'merge' => { 'strategy' => 'deep' }, 'value_type' => 'Hash' })
+  $postgres_resources = $postgres.map |$key,$values| {
+    {
+      'name'      => $values[name],
+      'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}",
+      'username'  => $values[user],
+      'password'  => $values[password],
+      'maxactive' => $values[max_conn],
+      'maxidle'   => $values[max_conn],
+    }
+  }
+
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
   $logentries_applogs_token = $logentries_tokens['applogs']
@@ -42,6 +55,7 @@ class rk_tomcat::tomcat (
   $redis_pushnotif_uri = "redis://${redis_host}:${redis_port}/${redis_pushnotif_db}"
   $redis_queue_uri = "redis://${redis_host}:${redis_port}/${redis_queue_db}"
 
+  # SQS
   $sqs_access_key = $aws_keys['sqs']['access_key']
   $sqs_secret_key = $aws_keys['sqs']['secret_key']
 
@@ -89,6 +103,11 @@ class rk_tomcat::tomcat (
   file { 'PushNotificationTrackingConfiguration.conf':
     path    => "${catalina_home}/conf/PushNotificationTrackingConfiguration.conf",
     content => template('rk_tomcat/PushNotificationTrackingConfiguration.conf.erb'),
+  } ->
+
+  file { 'server.xml':
+    path    => "${catalina_home}/conf/server.xml",
+    content => template('rk_tomcat/server.xml.erb'),
   } ->
 
   ::tomcat::service { $tomcat_instance:
