@@ -49,7 +49,7 @@ class rk_tomcat::tomcat (
       'maxidle'   => $values[max_conn],
     }
   }
-  $postgres_driver_jarfile = "${postgres_driver}.jar}
+  $postgres_driver_jarfile = "${postgres_driver}.jar"
 
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
