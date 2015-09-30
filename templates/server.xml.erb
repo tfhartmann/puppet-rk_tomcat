@@ -47,17 +47,17 @@
               pathname="conf/tomcat-users.xml" />
 
     <%- @postgres_resources.each do |resource| -%>
-    <!-- Define resource to be used for the <%= resource.lookup('name') -%> pool -->
+    <!-- Define resource to be used for the <%= resource.fetch('name') -%> pool -->
     <Resource
-       name="jdbc/<%= resource.lookup('name') -%>"
+       name="jdbc/<%= resource.fetch('name') -%>"
        driverClassName="org.postgresql.Driver"
        factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-       url="<%= resource.lookup('url') -%>"
-       username="<%= resource.lookup('username') -%>"
-       password="<%= resource.lookup('password') -%>"
+       url="<%= resource.fetch('url') -%>"
+       username="<%= resource.fetch('username') -%>"
+       password="<%= resource.fetch('password') -%>"
        type="javax.sql.DataSource"
-       maxActive="<%= resource.lookup('maxactive') -%>"
-       maxIdle="<%= resource.lookup('maxidle') -%>"
+       maxActive="<%= resource.fetch('maxactive') -%>"
+       maxIdle="<%= resource.fetch('maxidle') -%>"
        maxWait="10000"
        removeAbandoned="true"
        validationQuery="select 1"
