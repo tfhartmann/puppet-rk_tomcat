@@ -5,7 +5,7 @@ overrides = {
    subscriberWaitTimeoutMillis = 60000
    sqsAccessKey = "<%= @sqs_access_key -%>"
    sqsSecretKey = "<%= @sqs_secret_key -%>"
-   messageDeduplicationURI = "redis://<%= @redis_queue_host -%>:<%= @redis_queue_port -%>/<%= @redis_queue_db -%>"
+   messageDeduplicationURI = "<%= @redis_queue_uri -%>"
    messageDeduplicationMaxConnections = 15
    messageDeduplicationConnectionTimeout = 4000
    messageDeduplicationTTL = 600

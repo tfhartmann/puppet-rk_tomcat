@@ -1,0 +1,8 @@
+overrides = {
+   pushNotificationTrackingURI = "<%= @redis_pushnotif_uri -%>"
+   pushNotificationTrackingMaxConnections = 15
+   pushNotificationTrackingConnectionTimeout = 4000
+   pushNotificationTrackingTTL = 604800
+}
+
+stage = ${overrides}

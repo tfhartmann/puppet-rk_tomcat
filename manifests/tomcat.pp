@@ -10,8 +10,9 @@ class rk_tomcat::tomcat (
   $deploy_user,
   $deploy_password,
   $logentries_tokens,
-  $redis_queue_host,
-  $redis_queue_port,
+  $redis_host,
+  $redis_port,
+  $redis_pushnotif_db,
   $redis_queue_db,
   $tomcat_instance,
   $tomcat_pkg,
@@ -33,8 +34,13 @@ class rk_tomcat::tomcat (
     $queue_identifier = ''
   }
 
+  # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
   $logentries_applogs_token = $logentries_tokens['applogs']
+
+  # Redis
+  $redis_pushnotif_uri = "redis://${redis_host}:${redis_port}/${redis_pushnotif_db}"
+  $redis_queue_uri = "redis://${redis_host}:${redis_port}/${redis_queue_db}"
 
   $sqs_access_key = $aws_keys['sqs']['access_key']
   $sqs_secret_key = $aws_keys['sqs']['secret_key']
@@ -78,6 +84,11 @@ class rk_tomcat::tomcat (
   file { 'MessageQueueingConfiguration.conf':
     path    => "${catalina_home}/conf/MessageQueueingConfiguration.conf",
     content => template('rk_tomcat/MessageQueueingConfiguration.conf.erb'),
+  } ->
+
+  file { 'PushNotificationTrackingConfiguration.conf':
+    path    => "${catalina_home}/conf/PushNotificationTrackingConfiguration.conf",
+    content => template('rk_tomcat/PushNotificationTrackingConfiguration.conf.erb'),
   } ->
 
   ::tomcat::service { $tomcat_instance:
