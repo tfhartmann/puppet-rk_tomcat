@@ -35,7 +35,7 @@ class rk_tomcat::tomcat (
   }
 
   # Postgres
-  $postgres = lookup('postgres', { 'merge' => { 'strategy' => 'deep' }, 'value_type' => Hash })
+  $postgres = lookup('rk_tomcat::tomcat::postgres', { 'merge' => { 'strategy' => 'deep' }, 'value_type' => Hash })
   $postgres_resources = $postgres.map |$key,$values| {
     {
       'name'      => $values[name],
