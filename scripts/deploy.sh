@@ -52,6 +52,9 @@ cat > /etc/hiera/hiera.yaml << 'HIERA'
 :backends:
   - module_data
 :merge_behavior: deeper
+:deep_merge_options:
+  :merge_hash_arrays: true
+  :merge_debug: true
 HIERA
 puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" -e 'class { "rk_tomcat": }'
 
