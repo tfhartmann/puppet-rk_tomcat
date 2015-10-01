@@ -10,19 +10,19 @@ rk_tomcat::signal::stack: rk-stage-app2
 rk_tomcat::tomcat::catalina_home: /usr/share/tomcat7
 rk_tomcat::tomcat::postgres:
     data:
-        host: runkeeper-stage21.ca4bhrmkhch7.us-east-1.rds.amazonaws.com
+        host: runkeeper-stage21-db.rk-stage-app2.vpc.rkcloud.us
         port: 5432
         max_conn: 5
     feed:
-        host: runkeeper-stage21.ca4bhrmkhch7.us-east-1.rds.amazonaws.com
+        host: runkeeper-stage21-db.rk-stage-app2.vpc.rkcloud.us
         port: 5432
         max_conn: 10
     trip:
-        host: runkeeper-stage21.ca4bhrmkhch7.us-east-1.rds.amazonaws.com
+        host: runkeeper-stage21-db.rk-stage-app2.vpc.rkcloud.us
         port: 5432
         max_conn: 10
 rk_tomcat::tomcat::postgres_driver: postgresql-9.4-1203.jdbc42
-rk_tomcat::tomcat::redis_host: rkr1jpb9q9jrmxlv.yv323k.ng.0001.use1.cache.amazonaws.com
+rk_tomcat::tomcat::redis_host: "redis.%{alias('rk_tomcat::signal::stack').vpc.rkcloud.us"
 rk_tomcat::tomcat::redis_port: 6379
 rk_tomcat::tomcat::redis_pushnotif_db: 11
 rk_tomcat::tomcat::redis_queue_db: 12
