@@ -4,7 +4,7 @@ class rk_tomcat::signal (
   $stack,
   $resource,
 ) {
-  $cfn_signal_cmd = "/opt/aws/bin/cfn-signal -e 0 --stack ${stack} --resource ${resource}"
+  $cfn_signal_cmd = "/opt/aws/bin/cfn-signal --stack=${stack} --resource=${resource}"
 
   exec { 'tomcat-cfn-signal':
     path      => '/usr/bin:/bin:/usr/sbin:/sbin',
