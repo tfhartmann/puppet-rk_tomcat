@@ -22,7 +22,7 @@ rk_tomcat::tomcat::postgres:
         port: 5432
         max_conn: 10
 rk_tomcat::tomcat::postgres_driver: postgresql-9.4-1203.jdbc42
-rk_tomcat::tomcat::redis_host: "redis.%{alias('rk_tomcat::signal::stack').vpc.rkcloud.us"
+rk_tomcat::tomcat::redis_host: "redis.%{alias('rk_tomcat::signal::stack')}.vpc.rkcloud.us"
 rk_tomcat::tomcat::redis_port: 6379
 rk_tomcat::tomcat::redis_pushnotif_db: 11
 rk_tomcat::tomcat::redis_queue_db: 12
