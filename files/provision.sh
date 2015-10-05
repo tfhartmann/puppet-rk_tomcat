@@ -13,8 +13,8 @@ yum -y update
 echo "### Uninstalling upstream Puppet..."
 yum -y erase puppet
 
-echo "### Installing git..."
-yum -y install git
+echo "### Installing utilities..."
+yum -y install git jq
 
 cd ~
 
