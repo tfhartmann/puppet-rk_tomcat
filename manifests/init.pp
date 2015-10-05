@@ -40,7 +40,8 @@
 # This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 #
 class rk_tomcat (
-  $mode = 'deploy'
+  $stack,
+  $mode = 'deploy',
 ) {
   validate_re($mode, '^(provision|deploy)$')
 
