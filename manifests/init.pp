@@ -54,11 +54,9 @@ class rk_tomcat (
   class { 'rk_tomcat::tomcat': }
 
   if ( $mode == 'deploy' ) {
-    class { 'rk_tomcat::signal':
+    class { 'rk_tomcat::deploy':
       require => Class[rk_tomcat::tomcat],
-    } ->
-
-    class { 'rk_tomcat::deploy': }
+    }
   }
 
 }
