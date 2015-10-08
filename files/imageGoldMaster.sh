@@ -31,3 +31,6 @@ while [ "$IMAGE_STATE" != "available" ]; do
   IMAGE_STATE=$(aws ec2 describe-images --image-ids $IMAGE_ID --owners self | jq -r '.Images[].State')
 done
 echo $IMAGE_STATE
+
+TERMINATED_INSTANCE_ID=$(aws ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -d '.TerminatingInstances[].InstanceId')
+echo $TERMINATED_INSTANCE_ID

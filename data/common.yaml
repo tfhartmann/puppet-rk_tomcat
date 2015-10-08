@@ -6,6 +6,7 @@ rk_tomcat::java::zulu_version: 1.8.0_60-8.9.0.4
 # Tomcat
 rk_tomcat::stack: rk-stage-app2
 rk_tomcat::deploy::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
+rk_tomcat::deploy::tomcat_svc: "%{alias('rk_tomcat::tomcat::tomcat_svc')}"
 rk_tomcat::tomcat::catalina_home: /usr/share/tomcat7
 rk_tomcat::tomcat::postgres:
     data:
