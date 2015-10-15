@@ -5,6 +5,12 @@ if [[ "${USER}" -ne 0 ]]; then
   exit 1
 fi
 
+# determine AWS region
+AZ=$(ec2-metadata -z | awk '{print $2}')
+REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
+
+AWS="aws --region $REGION"
+
 echo "### Provisioning..."
 
 echo "### Patching system..."
@@ -20,6 +26,11 @@ cd ~
 
 echo "### Cloning Tomcat platform configuration..."
 git clone https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
+
+echo "### Copying secrets..."
+touch rk_tomcat/data/secrets.yaml \
+  && chmod 600 rk_tomcat/data/secrets.yaml \
+  && $AWS s3 cp s3://rk-devops-${REGION}/secrets/secrets.yaml rk_tomcat/data/secrets.yaml
 
 if [ ! -r "rk_tomcat/data/secrets.yaml" ]; then
   echo "Populate the secrets.yaml file and then run $0 again."
