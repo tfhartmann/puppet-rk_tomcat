@@ -10,7 +10,7 @@ else
 fi
 
 # create the image
-GOLD_MASTER_AMI=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.Name) | last | .ImageId')
+GOLD_MASTER_AMI=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
 
 INSTANCE_DATA=$(aws ec2 describe-instances --filters "Name=image-id,Values=${GOLD_MASTER_AMI}" "Name=instance-state-name,Values=running")
 INSTANCE_ID=$(echo "$INSTANCE_DATA" | jq -r '.Reservations[].Instances[].InstanceId')
