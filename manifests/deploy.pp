@@ -13,8 +13,6 @@ class rk_tomcat::deploy (
   exec { 'deployLastSuccessfulBuild':
     command => 'deployLastSuccessfulBuild.sh',
     unless  => "ls ${catalina_home}/webapps/*.war >/dev/null 2>&1",
-    before  => Service[$tomcat_svc],
-    notify  => Service[$tomcat_svc],
   }
 
   if ( 'dashboard' in $artifacts ) {
