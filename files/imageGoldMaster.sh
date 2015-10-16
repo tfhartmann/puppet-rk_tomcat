@@ -13,7 +13,7 @@ fi
 INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=tomcat7-gold-master" "Name=instance-state-name,Values=running" | jq -r '.Reservations[].Instances[].InstanceId')
 
 # create the image
-IMAGE_INDEX=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.Name) | last | .Name | ltrimstr("tomcat7-master-")')
+IMAGE_INDEX=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .Name | ltrimstr("tomcat7-master-")')
 let IMAGE_INDEX++
 
 IMAGE_NAME="tomcat7-master-${IMAGE_INDEX}"

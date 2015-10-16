@@ -12,7 +12,7 @@ fi
 echo "Starting instance for '$BUILD_TARGET' image."
 
 # create instance
-GOLD_MASTER_AMI=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.Name) | last | .ImageId')
+GOLD_MASTER_AMI=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
 
 INSTANCE_DATA=$(aws ec2 run-instances \
   --image-id "$GOLD_MASTER_AMI" \
@@ -26,7 +26,7 @@ INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 sleep 5
 
 # tag instance
-IMAGE_INDEX=$(aws ec2 describe-images --owners self | jq -r ".Images | map(select(.Name | startswith(\"tomcat7-${BUILD_TARGET}-\"))) | sort_by(.Name) | last | .Name | ltrimstr(\"tomcat7-${BUILD_TARGET}-\")")
+IMAGE_INDEX=$(aws ec2 describe-images --owners self | jq -r ".Images | map(select(.Name | startswith(\"tomcat7-${BUILD_TARGET}-\"))) | sort_by(.CreationDate) | last | .Name | ltrimstr(\"tomcat7-${BUILD_TARGET}-\")")
 let IMAGE_INDEX++
 aws ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-${BUILD_TARGET}-${IMAGE_INDEX}"
 
