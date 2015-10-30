@@ -27,9 +27,6 @@ fi
 
 echo "### Deploying artifacts..."
 
-<%- @artifacts.each_value do |war| -%>
-rm -f <%= @catalina_home %>/webapps/<%= war %>
-<%- end -%>
 service <%= @tomcat_svc %> stop
 
 <%- @artifacts.each do |artifact, war| -%>
