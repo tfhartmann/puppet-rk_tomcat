@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+if [[ "${USER}" -ne 0 ]]; then
+  echo "$0 must be run as root."
+  exit 1
+fi
+
+BUILD_NUMBER="$1"
+
+# determine AWS region
+AZ=$(ec2-metadata -z | awk '{print $2}')
+REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
+
+AWS="aws --region $REGION"
+
+BUCKET="rk-devops-${REGION}"
+
+# Calculate last build number
+if [ -z "${BUILD_NUMBER}" ]; then
+  BUILD_NUMBER=$(${AWS} s3 ls s3://${BUCKET}/<%= @s3_path %>/<%= @tier %>/jobs/Build\ succeeds/ | grep PRE | awk '{print $2}' | cut -d/ -f1 | sort -nr | head -1)
+fi
+
+if [ -z "${BUILD_NUMBER}" ]; then
+  echo "Unable to determine latest build number, and none provided."
+  exit 1
+fi
+
+echo "### Deploying artifacts..."
+
+<%- @artifacts.each_value do |war| -%>
+rm -f <%= @catalina_home %>/webapps/<%= war %>
+<%- end -%>
+service <%= @tomcat_svc %> stop
+
+<%- @artifacts.each do |artifact, war| -%>
+echo "### Deploying artifact '<%= war %>' for '<%= artifact %>'..."
+TARGET="<%= @catalina_home %>/webapps/<%= war %>"
+$AWS s3 cp s3://${BUCKET}/<%= @s3_path %>/<%= @tier %>/jobs/Build\ succeeds/${BUILD_NUMBER}/<%= war %> $TARGET &&
+chown <%= @tomcat_user %>:<%= @tomcat_group %> $TARGET
+
+<%- end -%>
+service <%= @tomcat_svc %> start
