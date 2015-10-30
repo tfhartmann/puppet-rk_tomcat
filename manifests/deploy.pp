@@ -66,6 +66,11 @@ class rk_tomcat::deploy (
     notify => Service[$tomcat_svc],
   }
 
+  Exec {
+    path      => "${catalina_home}/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    logoutput => 'on_failure',
+  }
+
   # populate config files by hand, ugh
   file { 'deployBuild.sh':
     path    => "${catalina_home}/bin/deployBuild.sh",
@@ -112,11 +117,6 @@ class rk_tomcat::deploy (
     path    => "${catalina_home}/conf/tomcat7.conf",
     content => template('rk_tomcat/tomcat7.conf.erb'),
   } ->
-
-  Exec {
-    path      => "${catalina_home}/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-    logoutput => 'on_failure',
-  }
 
   exec { 'deployBuild':
     command => 'deployBuild.sh',
