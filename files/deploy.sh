@@ -29,7 +29,7 @@ echo "### Running Puppet agent..."
 puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" -e 'class { "rk_tomcat": mode => "deploy" }'
 
 echo "### Restarting Tomcat..."
-service tomcat restart
+service tomcat7 restart
 
 echo "### Disabling Puppet agent..."
 puppet resource service puppet ensure=stopped enable=false
