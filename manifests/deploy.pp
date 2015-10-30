@@ -63,7 +63,6 @@ class rk_tomcat::deploy (
     owner  => 'tomcat',
     group  => 'tomcat',
     mode   => '0640',
-    notify => Service[$tomcat_svc],
   }
 
   Exec {
@@ -126,7 +125,6 @@ class rk_tomcat::deploy (
   if ( 'dashboard' in $artifacts ) {
     exec { 'prewarmTomcat':
       command => 'echo "STUB FOR PREWARMING DISK CACHE"',
-      require => Service[$tomcat_svc],
     }
   }
 }
