@@ -34,7 +34,7 @@ class rk_tomcat::deploy (
   }
 
   # Postgres
-  $postgres = lookup('rk_tomcat::tomcat::postgres', { 'value_type' => Hash })
+  $postgres = lookup('rk_tomcat::deploy::postgres', { 'value_type' => Hash })
   $postgres_resources = $postgres.map |$key,$values| {
     {
       'name'      => $values[name],
