@@ -9,6 +9,11 @@ else
   exit 1
 fi
 
+# translate env vars to resource IDs
+# FIXME
+#BUILD_VPC_ID=$()
+
+
 # create instance
 INSTANCE_DATA=$(aws ec2 run-instances \
   --image-id "$AWS_LINUX_AMI" \
