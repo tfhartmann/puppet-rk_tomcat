@@ -16,8 +16,9 @@ REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 AWS="aws --region $REGION"
 
 # Calculate last build number
+S3_URI_PREFIX="s3://<%= @s3_path %>/<%= @stack %>/<%= @tier %>/jobs/successful/"
 if [ -z "${BUILD_NUMBER}" ]; then
-  BUILD_NUMBER=$(${AWS} s3 ls s3://<%= @s3_path %>/<%= @tier %>/jobs/Build\ succeeds/ | grep PRE | awk '{print $2}' | cut -d/ -f1 | sort -nr | head -1)
+  BUILD_NUMBER=$(${AWS} s3 ls $S3_URI_PREFIX | grep PRE | awk '{print $2}' | cut -d/ -f1 | sort -nr | head -1)
 fi
 
 if [ -z "${BUILD_NUMBER}" ]; then
@@ -31,9 +32,10 @@ service <%= @tomcat_svc %> stop
 
 <%- @artifacts.each do |artifact, war| -%>
 echo "### Deploying artifact '<%= war %>' for '<%= artifact %>'..."
+SOURCE="${S3_URI_PREFIX}/${BUILD_NUMBER}/<%= war %>"
 TARGET="<%= @catalina_home %>/webapps/<%= war %>"
-$AWS s3 cp s3://<%= @s3_path %>/<%= @tier %>/jobs/Build\ succeeds/${BUILD_NUMBER}/<%= war %> $TARGET &&
-chown <%= @tomcat_user %>:<%= @tomcat_group %> $TARGET
+$AWS s3 cp "$SOURCE" "$TARGET" &&
+chown <%= @tomcat_user %>:<%= @tomcat_group %> "$TARGET"
 
 <%- end -%>
 service <%= @tomcat_svc %> start

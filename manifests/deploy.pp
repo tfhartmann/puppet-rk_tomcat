@@ -15,6 +15,7 @@ class rk_tomcat::deploy (
   $redis_pushnotif_db,
   $redis_queue_db,
   $s3_path,
+  $stack,
   $staging_instance,
   $tomcat_svc,
 ) {
