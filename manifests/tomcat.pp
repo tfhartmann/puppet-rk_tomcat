@@ -1,6 +1,7 @@
 # rk_tomcat::tomcat
 #
 class rk_tomcat::tomcat (
+  $catalina_home,
   $postgres_driver,
   $tomcat_instance,
   $tomcat_pkg,
