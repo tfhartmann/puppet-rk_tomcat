@@ -13,3 +13,9 @@ rk_tomcat::tomcat::tomcat_pkg: tomcat7
 rk_tomcat::tomcat::tomcat_svc: tomcat7
 rk_tomcat::tomcat::tomcat_user: tomcat
 rk_tomcat::tomcat::tomcat_group: tomcat
+
+# New Relic
+rk_tomcat::newrelic::version: 3.15.0
+rk_tomcat::newrelic::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
+rk_tomcat::newrelic::tomcat_user: "%{alias('rk_tomcat::tomcat::tomcat_user')}"
+rk_tomcat::newrelic::tomcat_group: "%{alias('rk_tomcat::tomcat::tomcat_group')}"

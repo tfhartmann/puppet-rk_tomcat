@@ -1,6 +1,7 @@
 # rk_tomcat::tomcat
 #
 class rk_tomcat::tomcat (
+  $newrelic_plugin,
   $postgres_driver,
   $tomcat_instance,
   $tomcat_pkg,
@@ -28,6 +29,8 @@ class rk_tomcat::tomcat (
   ::tomcat::instance { $tomcat_instance:
     package_name => $tomcat_pkg,
   } ->
+
+  # class { 'rk_tomcat::newrelic': } ->
 
   file { 'postgres_driver':
     path   => "${catalina_home}/lib/${postgres_driver_jarfile}",
