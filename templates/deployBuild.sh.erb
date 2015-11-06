@@ -16,9 +16,9 @@ REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 AWS="aws --region $REGION"
 
 # Calculate last build number
-S3_URI_PREFIX="s3://<%= @s3_path %>/<%= @stack %>/<%= @tier %>/jobs/successful/"
+S3_URI_PREFIX="s3://<%= @s3_path %>/<%= @stack %>/<%= @tier %>/jobs/successful"
 if [ -z "${BUILD_NUMBER}" ]; then
-  BUILD_NUMBER=$(${AWS} s3 ls $S3_URI_PREFIX | grep PRE | awk '{print $2}' | cut -d/ -f1 | sort -nr | head -1)
+  BUILD_NUMBER=$(${AWS} s3 ls "${S3_URI_PREFIX}/" | grep PRE | awk '{print $2}' | cut -d/ -f1 | sort -nr | head -1)
 fi
 
 if [ -z "${BUILD_NUMBER}" ]; then
