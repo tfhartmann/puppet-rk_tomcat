@@ -1,7 +1,6 @@
 # rk_tomcat::tomcat
 #
 class rk_tomcat::tomcat (
-  $newrelic_plugin,
   $postgres_driver,
   $tomcat_instance,
   $tomcat_pkg,
