@@ -2,21 +2,36 @@
 #
 # Copy the local secrets.yaml file to S3.
 
-SECRETS_FILE='data/secrets.yaml'
 REGION='us-east-1'
 
-if [ ! -r "$SECRETS_FILE" ]; then
-  echo "Unable to read '$SECRETS_FILE', exiting."
+SCRIPTNAME=$(basename "$0")
+
+if [ -n "$1" ]; then
+  TAG="-${1}"
+else
+  TAG=""
+fi
+
+FILENAME="secrets${TAG}.yaml"
+
+LOCAL="data/${FILENAME}"
+REMOTE="s3://rk-devops-${REGION}/secrets/${FILENAME}"
+
+if [ "$SCRIPTNAME" = 'storeSecrets.sh' ]; then
+  SOURCE="$LOCAL"
+  TARGET="$REMOTE"
+  ACTION='store'
+elif [ "$SCRIPTNAME" = 'getSecrets.sh' ]; then
+  SOURCE="$REMOTE"
+  TARGET="$LOCAL"
+else
+  echo "'$SCRIPTNAME' is not an invocation I understand."
   exit 1
 fi
 
-if [ -n "$1" ]; then
-  TAG="$1"
-  TARGET_FILE="secrets-${TAG}.yaml"
-else
-  TARGET_FILE="secrets.yaml"
+if [[ ("$ACTION" = "store") && (! -r "$LOCAL") ]]; then
+  echo "Unable to read '$LOCAL', exiting."
+  exit 1
 fi
 
-TARGET="s3://rk-devops-${REGION}/secrets/${TARGET_FILE}"
-
-aws s3 cp $SECRETS_FILE $TARGET
+aws s3 cp $SOURCE $TARGET
