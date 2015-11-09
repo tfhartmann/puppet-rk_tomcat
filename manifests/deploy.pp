@@ -7,8 +7,6 @@ class rk_tomcat::deploy (
   $cloudant_host,
   $cloudant_user,
   $cloudant_password,
-  $deploy_user,
-  $deploy_password,
   $logentries_tokens,
   $redis_host,
   $redis_port,
@@ -75,14 +73,6 @@ class rk_tomcat::deploy (
   file { 'deployBuild.sh':
     path    => "${catalina_home}/bin/deployBuild.sh",
     content => template('rk_tomcat/deployBuild.sh.erb'),
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-  } ->
-
-  file { 'deployLastSuccessfulBuild.sh':
-    path    => "${catalina_home}/bin/deployLastSuccessfulBuild.sh",
-    content => template('rk_tomcat/deployLastSuccessfulBuild.sh.erb'),
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
