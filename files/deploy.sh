@@ -14,7 +14,7 @@ AWS="aws --region $REGION"
 echo "### Deploying..."
 
 echo "### Copying secrets..."
-for i in 'secrets secrets-common'; do
+for i in 'secrets' 'secrets-common'; do
   touch "rk_tomcat/data/${i}.yaml" \
     && chmod 600 "rk_tomcat/data/${i}.yaml" \
     && $AWS s3 cp "s3://rk-devops-${REGION}/secrets/${i}.yaml" "rk_tomcat/data/${i}.yaml"
