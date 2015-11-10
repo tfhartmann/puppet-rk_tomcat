@@ -38,4 +38,3 @@ $AWS s3 cp "$SOURCE" "$TARGET" &&
 chown <%= @tomcat_user %>:<%= @tomcat_group %> "$TARGET"
 
 <%- end -%>
-service <%= @tomcat_svc %> start
