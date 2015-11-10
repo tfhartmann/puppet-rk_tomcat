@@ -28,14 +28,15 @@ echo "### Cloning Tomcat platform configuration..."
 git clone https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
 
 echo "### Copying secrets..."
-for i in 'secrets' 'secrets-common'; do
+# only copy secrets-common to gold master image
+for i in 'secrets-common'; do
   touch "rk_tomcat/data/${i}.yaml" \
     && chmod 600 "rk_tomcat/data/${i}.yaml" \
     && $AWS s3 cp "s3://rk-devops-${REGION}/secrets/${i}.yaml" "rk_tomcat/data/${i}.yaml"
 done
 
-if [ ! -r "rk_tomcat/data/secrets.yaml" ]; then
-  echo "Populate the secrets.yaml file and then run $0 again."
+if [ ! -r "rk_tomcat/data/secrets-common.yaml" ]; then
+  echo "Populate the secrets-common.yaml file and then run $0 again."
   exit 0
 fi
 
