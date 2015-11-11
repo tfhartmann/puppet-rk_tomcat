@@ -2,8 +2,39 @@
 
    <property name="appName"           value="${CONTEXT_NAME}" />
    <property name="logFileDir"        value="<%= @catalina_home %>/logs" />
-   <property name="filePattern"       value="[%d{ISO8601}] %cn {%thread} [%level] %logger - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx" />
-   <property name="logentriesPattern" value="[%d{ISO8601}] %cn {%thread} [%level] %logger - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}} [<%= @log_identifier %>]%n" />
+   <property name="s3DirPrefix"       value="<%= @tier %>" />
+
+   <property name="ignoredStackTrace" value="
+      sun.reflect,
+      net.sourceforge.stripes,
+      org.stripesstuff,
+      java.lang.reflect,
+      java.util.concurrent,
+      java.lang.Thread.run,
+      java.util.concurrent,
+      javax.servlet,
+      javax.el.BeanELResolver,
+      org.apache.coyote,
+      org.apache.el,
+      org.apache.jasper,
+      org.apache.catalina,
+      org.apache.ibatis,
+      org.apache.tomcat,
+      org.postgresql,
+      com.googlecode.webutilities,
+      com.google.common.io,
+      com.google.common.reflect,
+      runkeeper.api.SetCharacterEncodingFilter,
+      runkeeper.web.SetCharacterEncodingFilter,
+      runkeeper.web.filters,
+      ch.qos.logback,
+      org.tuckey.web.filters,
+      com.thetransactioncompany.cors,
+      org.apache.tomcat.util
+   "/>
+
+   <property name="filePattern"       value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
+   <property name="logentriesPattern" value="%cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}} [<%= @serverAlias %>]%n%rEx{full,${ignoredStackTrace}}" />
 
    <!--********************************************************************************************-->
    <!-- Define our appenders                                                                       -->
@@ -45,6 +76,24 @@
        </filter>
    </appender>
 
+   <appender name="ANALYTICS_FILE" class="com.logpig.mweagle.rolling.S3RollingFileAppender">
+      <file>${logFileDir}/analytics-logback/${appName}_events.log</file>
+      <encoder>
+         <pattern>%msg%n</pattern>
+      </encoder>
+      
+      <%# TODO: Remove these keys when we switch to use IAM roles after AWS migration -%>
+      <accessKey>AKIAINEPMXG4YZQD6W3A</accessKey>
+      <secretKey>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</secretKey>
+      
+      <bucketName>rk-etl-data</bucketName>
+      <bucketDir>analytics-logback/${s3DirPrefix}/${appName}</bucketDir>
+      
+      <rollingPolicy class="com.logpig.mweagle.rolling.S3TimeBasedRollingPolicy">
+         <fileNamePattern>${logFileDir}/analytics-logback/${appName}_events.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
+      </rollingPolicy>
+   </appender>
+
    <appender name="ANALYTICS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
        <Debug>False</Debug>
        <Token><%= @logentries_analytics_token %></Token>
@@ -56,6 +105,7 @@
    </appender>
 
    <appender name="APPLOGS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+<%- if (@tier == "production" && ! @artifacts.keys.include?("admin")) -%>
        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
           <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
              <expression>try { Class.forName("fitnesskeeper.core.logging.InternalUsersFilter"); return true;  } catch (Exception ex) { return false; }</expression>
@@ -74,36 +124,7 @@
           <onMismatch>NEUTRAL</onMismatch>
        </filter>
        <filter class="fitnesskeeper.core.logging.InternalUsersFilter" />
-       <Debug>False</Debug>
-       <Token><%= @logentries_applogs_token %></Token>
-       <Ssl>False</Ssl>
-       <facility>USER</facility>
-       <layout>
-          <pattern>${logentriesPattern}</pattern>
-       </layout>
-   </appender>
-
-   <appender name="APPLOGS_ADMIN_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
-       <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-          <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
-             <expression>try { if ("${environment}".equals("PRODUCTION") &amp;&amp; "${appName}".equals("admin")) { return true; } else { return false; } } catch (Exception ex) { return false; }</expression>
-          </evaluator>
-          <OnMatch>NEUTRAL</OnMatch>
-          <OnMismatch>DENY</OnMismatch>
-       </filter>
-       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-           <level>INFO</level>
-       </filter>
-       <Debug>False</Debug>
-       <Token><%= @logentries_applogs_token %></Token>
-       <Ssl>False</Ssl>
-       <facility>USER</facility>
-       <layout>
-          <pattern>${logentriesPattern}</pattern>
-       </layout>
-   </appender>
-
-   <appender name="REDIS_LOGENTRIES" class="com.logentries.logback.LogentriesAppender">
+<%- end -%>
        <Debug>False</Debug>
        <Token><%= @logentries_applogs_token %></Token>
        <Ssl>False</Ssl>
@@ -119,27 +140,33 @@
 
    <root level="INFO">
       <appender-ref ref="${appenderRef}" />
-      <appender-ref ref="NEWRELIC" />
-
       <appender-ref ref="APPLOGS_LOGENTRIES" />
-
+<%- if @tier == "production" -%>
+      <appender-ref ref="NEWRELIC" />
+<%- end -%>
    </root>
 
    <!--********************************************************************************************-->
    <!-- Control logging for our own code                                                           -->
    <!--********************************************************************************************-->
 
-   <logger name="runkeeper.analytics.AnalyticsLogger" additivity="false">
-      <level value="debug"/>
+   <logger name="fitnesskeeper" level="DEBUG"/>
+   <logger name="runkeeper"     level="DEBUG"/>
+
+   <logger name="analytics">
+      <level value="INFO"/>
+      <appender-ref ref="ANALYTICS_FILE" />
+<%- if @tier == "staging" -%>
       <appender-ref ref="ANALYTICS_LOGENTRIES"/>
+<%- end -%>
    </logger>
 
-   <logger name="fitnesskeeper" level="DEBUG"/>
-   <logger name="runkeeper" level="DEBUG"/>
-   <logger name="runkeeper.oldcache.RedisCacheAdapter" additivity="true">
-      <level value="INFO"/>
-      <appender-ref ref="REDIS_LOGENTRIES"/>
+<%- if @tier == "production" -%>
+   <logger name="trace-analytics">
+      <level value="TRACE"/>
+      <appender-ref ref="ANALYTICS_LOGENTRIES" />
    </logger>
+<%- end -%>
 
    <!-- this thing gets noisy because we override a class in the nevado JMS lib which has logging -->
    <logger name="runkeeper.jms.connector.AmazonAwsSQSConnector" level="OFF"/>
