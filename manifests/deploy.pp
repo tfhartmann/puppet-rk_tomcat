@@ -108,12 +108,12 @@ class rk_tomcat::deploy (
     content => template('rk_tomcat/tomcat7.conf.erb'),
   } ->
 
-  class { 'rk_tomcat::newrelic::deploy': } ->
-
   exec { 'deployBuild':
     command => 'deployBuild.sh',
     unless  => "ls ${catalina_home}/webapps/*.war >/dev/null 2>&1",
   }
+
+  class { 'rk_tomcat::newrelic::deploy': }
 
   if ( 'dashboard' in $artifacts ) {
     exec { 'prewarmTomcat':
