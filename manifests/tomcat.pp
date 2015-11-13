@@ -30,9 +30,7 @@ class rk_tomcat::tomcat (
     package_name => $tomcat_pkg,
   } ->
 
-  class { 'rk_tomcat::newrelic':
-    mode => 'provision',
-  } ->
+  class { 'rk_tomcat::newrelic::provision': } ->
 
   file { 'postgres_driver':
     path   => "${catalina_home}/lib/${postgres_driver_jarfile}",
