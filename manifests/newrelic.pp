@@ -2,24 +2,13 @@
 #
 class rk_tomcat::newrelic (
   $catalina_home,
+  $mode,
   $tomcat_user,
   $tomcat_group,
-  $version,
 ) {
+  validate_re($mode, '^(provision|deploy)$', "rk_tomcat::newrelic::mode must be 'provision' or 'deploy'")
+
   $newrelic_dir = "${catalina_home}/newrelic"
 
-  File {
-    ensure => present,
-    owner  => $tomcat_user,
-    group  => $tomcat_group,
-  }
-
-  file { $newrelic_dir:
-    ensure       => directory,
-    mode         => '0750',
-    source       => 'puppet:///modules/rk_tomcat/newrelic',
-    recurse      => 'remote',
-    recurselimit => 1,
-  }
-
+  class { "rk_tomcat::newrelic::${mode}": }
 }

@@ -108,7 +108,9 @@ class rk_tomcat::deploy (
     content => template('rk_tomcat/tomcat7.conf.erb'),
   } ->
 
-  class { 'rk_tomcat::newrelic::deploy': } ->
+  class { 'rk_tomcat::newrelic':
+    mode => 'deploy',
+  } ->
 
   exec { 'deployBuild':
     command => 'deployBuild.sh',

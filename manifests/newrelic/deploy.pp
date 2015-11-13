@@ -2,14 +2,11 @@
 #
 class rk_tomcat::newrelic::deploy(
   $app_names,
+  $artifacts,
   $attr_include,
   $attr_exclude,
-  $artifacts,
-  $catalina_home,
   $license,
-  $tomcat_user,
-  $tomcat_group,
-) {
+) inherits rk_tomcat::newrelic {
   if ( size($artifacts) == 1 ) {
     $newrelic_environment = 'production'
     if has_key($app_names, $artifacts[0]) {
@@ -26,8 +23,8 @@ class rk_tomcat::newrelic::deploy(
 
   file { "$newrelic_dir/newrelic.yml":
     ensure  => present,
-    owner   => $tomcat_user,
-    group   => $tomcat_group,
+    owner   => $rk_tomcat::newrelic::tomcat_user,
+    group   => $rk_tomcat::newrelic::tomcat_group,
     mode    => '0640',
     content => template('rk_tomcat/newrelic.yml.erb'),
   }
