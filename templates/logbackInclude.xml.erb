@@ -140,7 +140,11 @@
 
    <root level="INFO">
       <appender-ref ref="${appenderRef}" />
+      
+<%- if @tier != "loadtest" -%>
       <appender-ref ref="APPLOGS_LOGENTRIES" />
+<%- end -%>
+      
 <%- if @tier == "production" -%>
       <appender-ref ref="NEWRELIC" />
 <%- end -%>
@@ -150,12 +154,27 @@
    <!-- Control logging for our own code                                                           -->
    <!--********************************************************************************************-->
 
+<%- if @tier != "loadtest" -%>
    <logger name="fitnesskeeper" level="DEBUG"/>
    <logger name="runkeeper"     level="DEBUG"/>
+<%- end -%>
+
+<%- if @tier == "loadtest" -%>
+   <logger name="fitnesskeeper" level="ERROR"/>
+   <logger name="runkeeper"     level="ERROR"/>
+<%- end -%>
+
+   <!--********************************************************************************************-->
+   <!-- Analytcis logging                                                                          -->
+   <!--********************************************************************************************-->
 
    <logger name="analytics">
       <level value="INFO"/>
+      
+<%- if @tier != "loadtest" -%>
       <appender-ref ref="ANALYTICS_FILE" />
+<%- end -%>
+      
 <%- if @tier == "staging" -%>
       <appender-ref ref="ANALYTICS_LOGENTRIES"/>
 <%- end -%>

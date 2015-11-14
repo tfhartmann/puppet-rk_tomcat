@@ -19,10 +19,19 @@ class rk_tomcat::deploy (
 ) {
 
   if ( $staging_instance ) {
-    $cloudant_suffix  = "-${staging_instance}"
-    $log_identifier   = $staging_instance
-    $queue_identifier = $staging_instance
-    $tier             = 'staging'
+    if ( $staging_instance =~ /LoadTest/ ) {
+      $cloudant_suffix  = "-${staging_instance}"
+      $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
+      $log_identifier   = "${log_identifiers[0]}-LoadTest"
+      $queue_identifier = $staging_instance
+      $tier             = 'loadtest'
+    }
+    else {
+      $cloudant_suffix  = "-${staging_instance}"
+      $log_identifier   = $staging_instance
+      $queue_identifier = $staging_instance
+      $tier             = 'staging'
+    }
   }
   else {
     $cloudant_suffix  = ''
