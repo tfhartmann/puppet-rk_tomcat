@@ -53,6 +53,6 @@ echo $IMAGE_STATE
 TERMINATED_INSTANCE_ID=$($AWS ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
 
 # save state for the next script
-echo > $STATE <<STATE
+cat > $STATE <<STATE
 IMAGE_ID=$IMAGE_ID
 STATE
