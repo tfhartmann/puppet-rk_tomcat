@@ -1,6 +1,9 @@
 #!/bin/bash
 #
 # Make an image of the running gold master instance.
+if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
+  . /etc/profile.d/aws-apitools-common.sh
+fi
 
 if [ -r ".env" ]; then
   . .env

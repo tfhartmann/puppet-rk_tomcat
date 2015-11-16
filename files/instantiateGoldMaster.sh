@@ -1,6 +1,9 @@
 #!/bin/bash
 #
 # Spin up an instance to make a new gold master.
+if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
+  . /etc/profile.d/aws-apitools-common.sh
+fi
 
 if [ -r ".env" ]; then
   . .env
