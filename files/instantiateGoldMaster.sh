@@ -27,6 +27,10 @@ SG_FILTER=$(echo -n '.SecurityGroups | map({GroupName, GroupId}) | map(select(.G
 BUILD_SECURITY_GROUP_ID=$($AWS ec2 describe-security-groups --filters "Name=vpc-id,Values=${BUILD_VPC_ID}" | jq -r "$SG_FILTER")
 BUILD_SUBNET_ID=$($AWS ec2 describe-subnets --filters "Name=vpc-id,Values=${BUILD_VPC_ID}" "Name=tag:Name,Values=${BUILD_SUBNET}" | jq -r '.Subnets | last | .SubnetId')
 
+echo "BUILD_VPC_ID: ${BUILD_VPC_ID}"
+echo "BUILD_SECURITY_GROUP_ID: ${BUILD_SECURITY_GROUP_ID}"
+echo "BUILD_SUBNET_ID: ${BUILD_SUBNET_ID}"
+
 # create instance
 INSTANCE_DATA=$($AWS ec2 run-instances \
   --image-id "$AWS_LINUX_AMI" \
