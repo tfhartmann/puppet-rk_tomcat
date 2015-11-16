@@ -34,13 +34,13 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
   --security-group-ids "$BUILD_SECURITY_GROUP_ID" \
   --instance-type "$BUILD_INSTANCE_TYPE" \
   --subnet-id "$BUILD_SUBNET_ID" \
-  --iam-instance-profile "Name=${BUILD_PROFILE_NAME}")
+  --iam-instance-profile "Name=${BUILD_PROFILE_NAME}") || exit 1
 
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 
 # tag instance
 sleep 5
-$AWS ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-gold-master"
+$AWS ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-gold-master" || exit 1
 
 echo $INSTANCE_ID
 INSTANCE_HOSTNAME=''
