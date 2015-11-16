@@ -9,6 +9,8 @@ else
   exit 1
 fi
 
+STATE='.state'
+
 # look up resource IDs
 BUILD_VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${BUILD_VPC}" | jq -r '.Vpcs | last | .VpcId')
 SG_FILTER=$(echo -n '.SecurityGroups | map({GroupName, GroupId}) | map(select(.GroupName | test("' && echo -n "^${BUILD_VPC}-${BUILD_SECURITY_GROUP}-.*$" && echo -n '")))[] | .GroupId')
@@ -51,3 +53,9 @@ while [ "$INSTANCE_STATE" != 'running' ]; do
 done
 
 echo $INSTANCE_HOSTNAME
+
+# save state for the next script
+echo > $STATE <<STATE
+INSTANCE_ID=$INSTANCE_ID
+INSTANCE_HOSTNAME=$INSTANCE_HOSTNAME
+STATE

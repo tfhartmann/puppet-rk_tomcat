@@ -9,8 +9,19 @@ else
   exit 1
 fi
 
-# find the gold master instance
-INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=tomcat7-gold-master" "Name=instance-state-name,Values=running" | jq -r '.Reservations[].Instances[].InstanceId')
+STATE='.env'
+if [ -r "$STATE" ]; then
+  . "$STATE"
+else
+  echo "Unable to read state file, querying AWS to determine gold master instance."
+  # find the gold master instance
+  INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=tomcat7-gold-master" "Name=instance-state-name,Values=running" | jq -r '.Reservations[].Instances[].InstanceId')
+fi
+
+if [ -z "$INSTANCE_ID" ]; then
+  echo "Unable to determine gold master instance ID, exiting."
+  exit 1
+fi
 
 # create the image
 IMAGE_INDEX=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .Name | ltrimstr("tomcat7-master-")')
@@ -33,4 +44,8 @@ done
 echo $IMAGE_STATE
 
 TERMINATED_INSTANCE_ID=$(aws ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
-echo $TERMINATED_INSTANCE_ID
+
+# save state for the next script
+echo > $STATE <<STATE
+IMAGE_ID=$IMAGE_ID
+STATE
