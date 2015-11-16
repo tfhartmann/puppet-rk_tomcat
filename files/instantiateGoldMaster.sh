@@ -32,7 +32,6 @@ echo "BUILD_SECURITY_GROUP_ID: ${BUILD_SECURITY_GROUP_ID}"
 echo "BUILD_SUBNET_ID: ${BUILD_SUBNET_ID}"
 
 # create instance
-set -o xtrace
 INSTANCE_DATA=$($AWS ec2 run-instances \
   --image-id "$AWS_LINUX_AMI" \
   --key-name "$BUILD_SSH_KEYPAIR" \
@@ -40,7 +39,6 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
   --instance-type "$BUILD_INSTANCE_TYPE" \
   --subnet-id "$BUILD_SUBNET_ID" \
   --iam-instance-profile "Name=${BUILD_PROFILE_NAME}") || exit 1
-set +o xtrace
 
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 
