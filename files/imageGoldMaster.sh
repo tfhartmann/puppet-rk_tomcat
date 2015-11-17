@@ -14,6 +14,10 @@ fi
 
 STATE='.state'
 
+if [ -r "$STATE" ]; then
+  . "$STATE"
+fi
+
 # determine region
 if [ -z "$REGION" ]; then
   REGION=us-east-1
@@ -32,27 +36,39 @@ if [ -z "$INSTANCE_ID" ]; then
   exit 1
 fi
 
-# create the image
-IMAGE_INDEX=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .Name | ltrimstr("tomcat7-master-")')
-let IMAGE_INDEX++
+# create the image, optionally taking IMAGE_INDEX as the first command-line argument
+if [ -z "$1" ]; then
+  echo "No image index providing, incrementing existing max index."
+  IMAGE_INDEX=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .Name | ltrimstr("tomcat7-master-")')
+  let IMAGE_INDEX++
+else
+  echo "Setting image index to ${IMAGE_INDEX}."
+fi
+
+if [ -z "$IMAGE_INDEX" ]; then
+  echo "Unable to determine image index, exiting."
+  exit 1
+fi
 
 IMAGE_NAME="tomcat7-master-${IMAGE_INDEX}"
 
 IMAGE_ID=$($AWS ec2 create-image --instance-id $INSTANCE_ID --name $IMAGE_NAME --reboot | jq -r '.ImageId')
-echo $IMAGE_ID
 
 if [ -z "$IMAGE_ID" ]; then
   exit 1
 fi
+
+echo "Creating image ${IMAGE_ID}..."
 
 IMAGE_STATE=''
 while [ "$IMAGE_STATE" != "available" ]; do
   sleep 2
   IMAGE_STATE=$($AWS ec2 describe-images --image-ids $IMAGE_ID --owners self | jq -r '.Images[].State')
 done
-echo $IMAGE_STATE
+echo "Image ${IMAGE_ID} is ${IMAGE_STATE}."
 
 TERMINATED_INSTANCE_ID=$($AWS ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
+echo "Terminating instance ${TERMINATED_INSTANCE_ID}."
 
 # save state for the next script
 cat > "$STATE" <<STATE
