@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # Spin up an instance to make a new gold master.
+SCRIPTDIR=$(dirname $0)
+
 if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
@@ -34,9 +36,14 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
   --security-group-ids "$BUILD_SECURITY_GROUP_ID" \
   --instance-type "$BUILD_INSTANCE_TYPE" \
   --subnet-id "$BUILD_SUBNET_ID" \
-  --iam-instance-profile "Name=${BUILD_PROFILE_NAME}") || exit 1
+  --iam-instance-profile "Name=${BUILD_PROFILE_NAME}" \
+  --user-data file://files/bootstrap.sh) || exit 1
 
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
+
+# upload semaphore
+PROVISION_SCRIPT="${SCRIPTDIR}/provision.sh"
+$AWS s3 cp $PROVISION_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
 
 # tag instance
 sleep 5
