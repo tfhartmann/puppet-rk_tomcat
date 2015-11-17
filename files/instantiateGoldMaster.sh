@@ -65,7 +65,7 @@ done
 echo $INSTANCE_HOSTNAME
 
 # save state for the next script
-cat > $STATE <<STATE
+cat >"$STATE" <<STATE
 INSTANCE_ID=$INSTANCE_ID
 INSTANCE_HOSTNAME=$INSTANCE_HOSTNAME
 STATE
