@@ -36,7 +36,12 @@ fi
 cd rk_tomcat
 
 $LOGGER "Running Puppet agent..."
-puppet apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" -e 'class { "rk_tomcat": mode => "deploy" }' || exit 1
+puppet apply \
+  --hiera_config "/etc/hiera/hiera.yaml" \
+  --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
+  --verbose \
+  --logdest syslog \
+  -e 'class { "rk_tomcat": mode => "deploy" }' || exit 1
 
 $LOGGER "Disabling Puppet agent..."
 puppet resource service puppet ensure=stopped enable=false
