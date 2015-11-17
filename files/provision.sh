@@ -77,11 +77,12 @@ cat > /etc/hiera/hiera.yaml << 'HIERA'
 :backends:
   - module_data
 HIERA
+mkdir -p /var/log/puppet
 puppet apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
   --verbose \
-  --logtest syslog \
+  --logdest /var/log/puppet/provision.log \
   -e 'class { "rk_tomcat": mode => "provision" }'
 
 $LOGGER "Disabling Puppet agent..."

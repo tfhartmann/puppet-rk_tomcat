@@ -40,7 +40,7 @@ puppet apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
   --verbose \
-  --logdest syslog \
+  --logdest /var/log/puppet/deploy.log \
   -e 'class { "rk_tomcat": mode => "deploy" }' || exit 1
 
 $LOGGER "Disabling Puppet agent..."
