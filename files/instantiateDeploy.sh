@@ -47,7 +47,7 @@ IMAGE_INDEX=$($AWS ec2 describe-images --owners self | jq -r ".Images | map(sele
 let IMAGE_INDEX++
 $AWS ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-${BUILD_TARGET}-${IMAGE_INDEX}"
 
-echo $INSTANCE_ID
+echo "Creating instance ${INSTANCE_ID}."
 INSTANCE_HOSTNAME=''
 
 # wait for hostname
@@ -67,4 +67,10 @@ while [ "$INSTANCE_STATE" != 'running' ]; do
   INSTANCE_STATE=$($AWS ec2 describe-instances --instance-ids $INSTANCE_ID | jq -r '.Reservations[].Instances[].State.Name')
 done
 
-echo $INSTANCE_HOSTNAME
+echo "Instance ${INSTANCE_ID} available at ${INSTANCE_HOSTNAME}."
+
+# save state for the next script
+cat >"$STATE" <<STATE
+INSTANCE_ID=$INSTANCE_ID
+INSTANCE_HOSTNAME=$INSTANCE_HOSTNAME
+STATE

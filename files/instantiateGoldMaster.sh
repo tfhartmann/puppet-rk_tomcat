@@ -49,7 +49,7 @@ $AWS s3 cp $PROVISION_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INST
 sleep 5
 $AWS ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-gold-master" || exit 1
 
-echo $INSTANCE_ID
+echo "Created instance ${INSTANCE_ID}."
 INSTANCE_HOSTNAME=''
 
 # wait for hostname
@@ -69,7 +69,7 @@ while [ "$INSTANCE_STATE" != 'running' ]; do
   INSTANCE_STATE=$($AWS ec2 describe-instances --instance-ids $INSTANCE_ID | jq -r '.Reservations[].Instances[].State.Name')
 done
 
-echo $INSTANCE_HOSTNAME
+echo "Instance ${INSTANCE_ID} available at ${INSTANCE_HOSTNAME}."
 
 # save state for the next script
 cat >"$STATE" <<STATE
