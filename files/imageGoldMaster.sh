@@ -12,6 +12,8 @@ else
   exit 1
 fi
 
+STATE='.state'
+
 # determine region
 if [ -z "$REGION" ]; then
   REGION=us-east-1
@@ -53,6 +55,6 @@ echo $IMAGE_STATE
 TERMINATED_INSTANCE_ID=$($AWS ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
 
 # save state for the next script
-cat >"$STATE" <<STATE
+cat > "$STATE" <<STATE
 IMAGE_ID=$IMAGE_ID
 STATE

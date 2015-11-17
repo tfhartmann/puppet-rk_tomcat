@@ -9,6 +9,8 @@ else
   exit 1
 fi
 
+STATE='.state'
+
 # create the image
 GOLD_MASTER_AMI=$(aws ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
 
@@ -32,3 +34,8 @@ echo $IMAGE_STATE
 
 TERMINATED_INSTANCE_ID=$(aws ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
 echo $TERMINATED_INSTANCE_ID
+
+# save state for the next script
+cat > "$STATE" <<STATE
+IMAGE_ID=$IMAGE_ID
+STATE
