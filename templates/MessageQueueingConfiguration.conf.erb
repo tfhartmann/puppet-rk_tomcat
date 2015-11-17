@@ -9,6 +9,11 @@ overrides = {
    messageDeduplicationMaxConnections = 15
    messageDeduplicationConnectionTimeout = 4000
    messageDeduplicationTTL = 600
+   
+<%- if @tier == "loadtest" -%>
+   disableEmailQueueing = true
+   disableEmailSending = true
+<%- end -%>
 }
 
 stage = ${overrides}

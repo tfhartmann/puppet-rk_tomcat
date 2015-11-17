@@ -160,15 +160,15 @@
 <%- end -%>
 
 <%- if @tier == "loadtest" -%>
-   <logger name="fitnesskeeper" level="ERROR"/>
-   <logger name="runkeeper"     level="ERROR"/>
+   <logger name="fitnesskeeper" level="WARN"/>
+   <logger name="runkeeper"     level="WARN"/>
 <%- end -%>
 
    <!--********************************************************************************************-->
    <!-- Analytcis logging                                                                          -->
    <!--********************************************************************************************-->
 
-   <logger name="analytics">
+   <logger name="analytics" additivity="false">
       <level value="INFO"/>
       
 <%- if @tier != "loadtest" -%>
@@ -181,7 +181,7 @@
    </logger>
 
 <%- if @tier == "production" -%>
-   <logger name="trace-analytics">
+   <logger name="trace-analytics" additivity="false">
       <level value="TRACE"/>
       <appender-ref ref="ANALYTICS_LOGENTRIES" />
    </logger>
