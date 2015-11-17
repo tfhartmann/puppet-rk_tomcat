@@ -38,10 +38,11 @@ fi
 
 # create the image, optionally taking IMAGE_INDEX as the first command-line argument
 if [ -z "$1" ]; then
-  echo "No image index providing, incrementing existing max index."
+  echo "No image index provided, incrementing existing max index."
   IMAGE_INDEX=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .Name | ltrimstr("tomcat7-master-")')
   let IMAGE_INDEX++
 else
+  IMAGE_INDEX="$1"
   echo "Setting image index to ${IMAGE_INDEX}."
 fi
 
