@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #
 LOGGER='logger -t [CLOUDINIT] -p user.info'
 
@@ -37,13 +37,14 @@ cd rk_tomcat
 
 $LOGGER "Running Puppet agent..."
 PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
-read -r -d '' PUPPETCMD <<ENDCMD
-$PUPPET apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" --logdest /var/log/puppet/deploy.log -e 'class { "rk_tomcat": mode => "deploy" }'
-ENDCMD
-ruby -e "system('${PUPPETCMD}')"
+$PUPPET apply \
+  --hiera_config "/etc/hiera/hiera.yaml" \
+  --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
+  --logdest /var/log/puppet/deploy.log \
+  -e 'class { "rk_tomcat": mode => "deploy" }'
 
 $LOGGER "Disabling Puppet agent..."
-/bin/bash -l -i -c $PUPPET resource service puppet ensure=stopped enable=false
+$PUPPET resource service puppet ensure=stopped enable=false
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true

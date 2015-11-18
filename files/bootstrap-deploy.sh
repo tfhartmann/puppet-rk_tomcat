@@ -1,5 +1,7 @@
-#!/bin/bash
+#!/bin/bash -l
 THE_SCRIPT='/root/deploy.sh'
+
+export PATH="/usr/local/bin:${PATH}"
 
 LOGGER='logger -t [CLOUDINIT] -p user.info'
 
@@ -9,7 +11,7 @@ fi
 
 if [ -x "$THE_SCRIPT" ]; then
   $LOGGER "Executing '$THE_SCRIPT'"
-  cd /root && /bin/bash -l -i "$THE_SCRIPT" > "${THE_SCRIPT}.log" 2>&1
+  cd /root && "$THE_SCRIPT" > "${THE_SCRIPT}.log" 2>&1
   exit
 else
   $LOGGER "'$THE_SCRIPT' not executable, exiting."

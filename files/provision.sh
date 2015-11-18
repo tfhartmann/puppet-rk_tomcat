@@ -84,9 +84,11 @@ HIERA
 mkdir -p /var/log/puppet
 
 PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
-PUPPET_VERSION=$(puppet --version)
-$LOGGER "PUPPET_VERSION: $PUPPET_VERSION"
-$PUPPET apply --hiera_config "/etc/hiera/hiera.yaml" --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" --logdest /var/log/puppet/provision.log -e 'class { "rk_tomcat": mode => "provision" }'
+$PUPPET apply \
+  --hiera_config "/etc/hiera/hiera.yaml" \
+  --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
+  --logdest /var/log/puppet/provision.log \
+  -e 'class { "rk_tomcat": mode => "provision" }'
 
 $LOGGER "Disabling Puppet agent..."
 $PUPPET resource service puppet ensure=stopped enable=false
