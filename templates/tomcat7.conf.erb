@@ -8,7 +8,7 @@ JASPER_HOME="<%= @catalina_home -%>"
 CATALINA_TMPDIR="/var/cache/tomcat7/temp"
 
 # You can pass some parameters to java here if you wish to
-JAVA_OPTS="-Xms512m -Xmx512m -XX:PermSize=256m -XX:MaxPermSize=256m -server -Djava.awt.headless=true -XX:-OmitStackTraceInFastThrow -Duser.timezone='GMT' -DFITNESSKEEPER_PLATFORM_ENVIRONMENT=STAGE -DFITNESSKEEPER_PLATFORM_CONFIG_PATH=<%= @catalina_home -%>/conf -Dlogback.ContextSelector=JNDI -Dnewrelic.environment=<%= @newrelic_env -%>"
+JAVA_OPTS="-Xms512m -Xmx512m -XX:PermSize=256m -XX:MaxPermSize=256m -server -Djava.awt.headless=true -XX:-OmitStackTraceInFastThrow -Duser.timezone='GMT' -DFITNESSKEEPER_PLATFORM_ENVIRONMENT=STAGE -DFITNESSKEEPER_PLATFORM_CONFIG_PATH=<%= @catalina_home -%>/conf -Dlogback.ContextSelector=JNDI -javaagent:<%= @catalina_home -%>/newrelic/newrelic.jar -Dnewrelic.environment=<%= @newrelic_env -%>"
 
 # What user should run tomcat
 TOMCAT_USER="<%= @tomcat_user -%>"

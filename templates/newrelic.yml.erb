@@ -277,11 +277,11 @@ test:
 
 loadtest:
   <<: *default_settings
-  app_name: <%= @app_name %> (AWS loadtest)
+  app_name: <%= @app_name %> (loadtest)
 
 production:
   <<: *default_settings
-  app_name: <%= @app_name %> (AWS)
+  app_name: <%= @app_name %>
 
 staging:
   <<: *default_settings
