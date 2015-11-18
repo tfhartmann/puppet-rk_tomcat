@@ -29,13 +29,8 @@ BUILD_SUBNET_ID=$($AWS ec2 describe-subnets --filters "Name=vpc-id,Values=${BUIL
 
 # create instance
 if [ -z "$GOLD_MASTER_AMI" ]; then
-  if [ -z "$1" ]; then
-    echo "Querying AWS to determine latest gold master image ID."
-    GOLD_MASTER_AMI=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
-  else
-    GOLD_MASTER_AMI="$1"
-    echo "Using gold master image ID ${GOLD_MASTER_AMI} provided on command line."
-  fi
+  echo "Querying AWS to determine latest gold master image ID."
+  GOLD_MASTER_AMI=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
 else
   echo "Using gold master image ID ${GOLD_MASTER_AMI} provided in environment."
 fi
