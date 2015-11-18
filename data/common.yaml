@@ -1,7 +1,7 @@
 ---
 # Java
 rk_tomcat::java::zulu_package: zulu-8
-rk_tomcat::java::zulu_version: 1.8.0_60-8.9.0.4
+rk_tomcat::java::zulu_version: 1.8.0_66-8.11.0.1
 
 # Tomcat
 rk_tomcat::tomcat::postgres_driver: postgresql-9.4-1203.jdbc42
