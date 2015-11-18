@@ -1,8 +1,7 @@
 #!/bin/bash -l
 THE_SCRIPT='/root/provision.sh'
 
-echo "Bootstrap environment:" > /root/bootstrap.log
-env >> /root/bootstrap.log
+export PATH="/usr/local/bin:${PATH}"
 
 LOGGER='logger -t [CLOUDINIT] -p user.info'
 
