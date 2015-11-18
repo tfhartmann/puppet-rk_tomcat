@@ -28,7 +28,7 @@ while [ "$TRIES" -lt "$LIMIT" ]; do
 
   if [ -r "$THE_SCRIPT" ]; then
     $LOGGER "Download successful, executing '$THE_SCRIPT'"
-    cd /root && chmod +x "$THE_SCRIPT" && /bin/bash -l -i -c "$THE_SCRIPT" > "${THE_SCRIPT}.log" 2>&1
+    cd /root && chmod +x "$THE_SCRIPT" && /bin/bash -l -i "$THE_SCRIPT" > "${THE_SCRIPT}.log" 2>&1
     exit
   else
     $LOGGER "No semaphore found, sleeping..."
