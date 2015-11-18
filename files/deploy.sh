@@ -44,7 +44,7 @@ $PUPPET apply \
   -e 'class { "rk_tomcat": mode => "deploy" }' || exit 1
 
 $LOGGER "Disabling Puppet agent..."
-$PUPPET resource service puppet ensure=stopped enable=false
+/bin/bash -l -i -c $PUPPET resource service puppet ensure=stopped enable=false
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true

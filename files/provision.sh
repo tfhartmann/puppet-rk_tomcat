@@ -84,14 +84,14 @@ HIERA
 mkdir -p /var/log/puppet
 
 PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
-$PUPPET apply \
+/bin/bash -l -i -c $PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
   --logdest /var/log/puppet/provision.log \
   -e 'class { "rk_tomcat": mode => "provision" }'
 
 $LOGGER "Disabling Puppet agent..."
-$PUPPET resource service puppet ensure=stopped enable=false
+/bin/bash -l -i -c $PUPPET resource service puppet ensure=stopped enable=false
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
