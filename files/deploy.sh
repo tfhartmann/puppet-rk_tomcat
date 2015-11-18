@@ -7,6 +7,12 @@ if [[ "${USER}" -ne 0 ]]; then
   exit 1
 fi
 
+# PATH munging
+LOCALBIN=$(echo $PATH | grep -c '/usr/local/bin')
+if [ ! $? ]; then
+  export PATH="/usr/local/bin:${PATH}"
+fi
+
 if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
