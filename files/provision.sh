@@ -7,12 +7,6 @@ if [[ "${USER}" -ne 0 ]]; then
   exit 1
 fi
 
-# PATH munging
-LOCALBIN=$(echo $PATH | grep -c '/usr/local/bin')
-if [ ! $? ]; then
-  export PATH="/usr/local/bin:${PATH}"
-fi
-
 if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
@@ -67,13 +61,17 @@ $LOGGER "Installing Bundler..."
 gem install io-console bundler
 
 $LOGGER "Installing other gem dependencies..."
-bundle install
+BUNDLE=$(which bundle 2>/dev/null || echo '/usr/local/bin/bundle')
+$BUNDLE install
 
 $LOGGER "Installing Puppet dependencies..."
 export PUPPET_MODULE_DIR='/etc/puppetlabs/code/modules'
 yum -y install ruby20-augeas
-librarian-puppet config path "$PUPPET_MODULE_DIR" --global
-librarian-puppet install
+
+LIBRARIAN_PUPPET=$(which librarian-puppet 2>/dev/null || echo '/usr/local/bin/librarian-puppet')
+$LIBRARIAN_PUPPET config path "$PUPPET_MODULE_DIR" --global
+$LIBRARIAN_PUPPET install
+
 ln -s /root/rk_tomcat "${PUPPET_MODULE_DIR}/rk_tomcat"
 
 $LOGGER "Running Puppet agent..."
@@ -84,15 +82,16 @@ cat > /etc/hiera/hiera.yaml << 'HIERA'
   - module_data
 HIERA
 mkdir -p /var/log/puppet
-puppet apply \
+
+PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
+$PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
-  --verbose \
   --logdest /var/log/puppet/provision.log \
   -e 'class { "rk_tomcat": mode => "provision" }'
 
 $LOGGER "Disabling Puppet agent..."
-puppet resource service puppet ensure=stopped enable=false
+$PUPPET resource service puppet ensure=stopped enable=false
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true

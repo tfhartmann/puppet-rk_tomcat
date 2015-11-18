@@ -7,12 +7,6 @@ if [[ "${USER}" -ne 0 ]]; then
   exit 1
 fi
 
-# PATH munging
-LOCALBIN=$(echo $PATH | grep -c '/usr/local/bin')
-if [ ! $? ]; then
-  export PATH="/usr/local/bin:${PATH}"
-fi
-
 if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
@@ -42,15 +36,15 @@ fi
 cd rk_tomcat
 
 $LOGGER "Running Puppet agent..."
-puppet apply \
+PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
+$PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
-  --verbose \
   --logdest /var/log/puppet/deploy.log \
   -e 'class { "rk_tomcat": mode => "deploy" }' || exit 1
 
 $LOGGER "Disabling Puppet agent..."
-puppet resource service puppet ensure=stopped enable=false
+$PUPPET resource service puppet ensure=stopped enable=false
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
