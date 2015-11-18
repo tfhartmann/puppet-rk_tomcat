@@ -9,7 +9,7 @@ fi
 
 if [ -x "$THE_SCRIPT" ]; then
   $LOGGER "Executing '$THE_SCRIPT'"
-  cd /root && /bin/bash -l -c "$THE_SCRIPT"
+  cd /root && /bin/bash -x -l -c "$THE_SCRIPT" > "${THE_SCRIPT}/log" 2>&1
   exit
 else
   $LOGGER "'$THE_SCRIPT' not executable, exiting."
