@@ -28,12 +28,16 @@ BUILD_SECURITY_GROUP_ID=$($AWS ec2 describe-security-groups --filters "Name=vpc-
 BUILD_SUBNET_ID=$($AWS ec2 describe-subnets --filters "Name=vpc-id,Values=${BUILD_VPC_ID}" "Name=tag:Name,Values=${BUILD_SUBNET}" | jq -r '.Subnets | last | .SubnetId')
 
 # create instance
-if [ -z "$1" ]; then
-  echo "Querying AWS to determine latest gold master image ID."
-  GOLD_MASTER_AMI=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
+if [ -z "$GOLD_MASTER_AMI" ]; then
+  if [ -z "$1" ]; then
+    echo "Querying AWS to determine latest gold master image ID."
+    GOLD_MASTER_AMI=$($AWS ec2 describe-images --owners self | jq -r '.Images | map(select(.Name | startswith("tomcat7-master-"))) | sort_by(.CreationDate) | last | .ImageId')
+  else
+    GOLD_MASTER_AMI="$1"
+    echo "Using gold master image ID ${GOLD_MASTER_AMI} provided on command line."
+  fi
 else
-  GOLD_MASTER_AMI="$1"
-  echo "Using provided gold master image ID ${GOLD_MASTER_AMI}."
+  echo "Using gold master image ID ${GOLD_MASTER_AMI} provided in environment."
 fi
 
 INSTANCE_DATA=$($AWS ec2 run-instances \
