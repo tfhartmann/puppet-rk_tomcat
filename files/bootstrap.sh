@@ -9,8 +9,8 @@ if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
 
-ZONE=$(ec2-metadata --availability-zone | awk '{print $2}')
-REGION=$(echo "${ZONE}" | sed 's/[[:alpha:]]$//')
+AZ=$(ec2-metadata --availability-zone | awk '{print $2}')
+REGION=$(echo "${AZ}" | sed 's/[[:alpha:]]$//')
 AWS="aws --region $REGION"
 
 INSTANCE_ID=$(ec2-metadata --instance-id | awk '{print $2}')

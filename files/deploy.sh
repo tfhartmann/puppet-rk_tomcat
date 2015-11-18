@@ -15,7 +15,7 @@ INSTANCE_ID=$(ec2-metadata -i | awk '{print $2}')
 
 # determine AWS region
 AZ=$(ec2-metadata -z | awk '{print $2}')
-REGION=$($LOGGER "$AZ" | sed 's/[[:alpha:]]$//')
+REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 
 AWS="aws --region $REGION"
 
