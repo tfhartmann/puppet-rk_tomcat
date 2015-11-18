@@ -44,6 +44,10 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
   --iam-instance-profile "Name=${BUILD_PROFILE_NAME}" \
   --user-data file://files/bootstrap-deploy.sh)
 
+# upload semaphore
+DEPLOY_SCRIPT="${SCRIPTDIR}/deploy.sh"
+$AWS s3 cp $DEPLOY_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
+
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 sleep 5
 
