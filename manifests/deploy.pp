@@ -26,6 +26,7 @@ class rk_tomcat::deploy (
       $queue_identifier = 'loadtest'
       $tier             = 'loadtest'
       $newrelic_env     = 'loadtest'
+      $platform_env     = 'STAGE'
     }
     else {
       $cloudant_suffix  = "-${staging_instance}"
@@ -34,6 +35,7 @@ class rk_tomcat::deploy (
       $queue_identifier = $staging_instance
       $tier             = 'staging'
       $newrelic_env     = 'staging'
+      $platform_env     = 'STAGE'
     }
   }
   else {
@@ -43,6 +45,7 @@ class rk_tomcat::deploy (
     $queue_identifier = ''
     $tier             = 'production'
     $newrelic_env     = 'production'
+    $platform_env     = 'PRODUCTION'
   }
 
   # Postgres

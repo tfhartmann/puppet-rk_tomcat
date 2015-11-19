@@ -7,8 +7,18 @@ CATALINA_HOME="<%= @catalina_home -%>"
 JASPER_HOME="<%= @catalina_home -%>"
 CATALINA_TMPDIR="/var/cache/tomcat7/temp"
 
-# You can pass some parameters to java here if you wish to
-JAVA_OPTS="-Xms512m -Xmx512m -server -Djava.awt.headless=true -XX:-OmitStackTraceInFastThrow -Duser.timezone='GMT' -DFITNESSKEEPER_PLATFORM_ENVIRONMENT=STAGE -DFITNESSKEEPER_PLATFORM_CONFIG_PATH=<%= @catalina_home -%>/conf -Dlogback.ContextSelector=JNDI -javaagent:<%= @catalina_home -%>/newrelic/newrelic.jar -Dnewrelic.environment=<%= @newrelic_env -%>"
+# Reserve 80% of the RAM for tomcat stack, round the total to nearest whole kb
+INSTALLED_RAM=$(grep MemTotal /proc/meminfo | awk '{print $2;}')
+HEAP_SIZE=$(echo "${INSTALLED_RAM} * .8" | bc)
+HEAP_SIZE=$(printf "%0.f" ${HEAP_SIZE})
+
+# Prepare the options to pass to java
+HEAP_OPTS="-Xms${HEAP_SIZE}k -Xmx${HEAP_SIZE}k"
+JVM_OPTS="-server -Djava.awt.headless=true -XX:-OmitStackTraceInFastThrow -Duser.timezone='GMT' -Dlogback.ContextSelector=JNDI"
+RK_PLATFORM_OPTS="-DFITNESSKEEPER_PLATFORM_ENVIRONMENT=<%= platform_env -%> -DFITNESSKEEPER_PLATFORM_CONFIG_PATH=${CATALINA_HOME}/conf"
+NEWRELIC_OPTS="-javaagent:${CATALINA_HOME}/newrelic/newrelic.jar -Dnewrelic.environment=<%= @newrelic_env -%>"
+
+JAVA_OPTS="${HEAP_OPTS} ${JVM_OPTS} ${RK_PLATFORM_OPTS} ${NEWRELIC_OPTS}"
 
 # What user should run tomcat
 TOMCAT_USER="<%= @tomcat_user -%>"
