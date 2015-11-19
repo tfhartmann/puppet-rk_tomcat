@@ -67,6 +67,7 @@ class rk_tomcat::tomcat (
     use_jsvc       => false,
     use_init       => true,
     service_name   => $tomcat_svc,
-    service_ensure => 'running',
+    service_ensure => 'stopped',
+    service_enable => true,
   }
 }
