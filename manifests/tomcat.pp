@@ -5,6 +5,7 @@ class rk_tomcat::tomcat (
   $postgres_driver,
   $tomcat_instance,
   $tomcat_pkg,
+  $tomcat_native_pkg,
   $tomcat_svc,
   $tomcat_user,
   $tomcat_group,
@@ -20,6 +21,8 @@ class rk_tomcat::tomcat (
     mode   => '0640',
     notify => Service[$tomcat_svc],
   }
+
+  # apr for performance
 
   # install Tomcat package
   class { '::tomcat':
@@ -54,6 +57,10 @@ class rk_tomcat::tomcat (
     group  => 'root',
     mode   => '0755',
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
+  } ->
+
+  package { $tomcat_native_pkg:
+    ensure => present,
   } ->
 
   ::tomcat::service { $tomcat_instance:
