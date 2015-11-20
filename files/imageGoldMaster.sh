@@ -61,12 +61,17 @@ fi
 
 echo "Creating image ${IMAGE_ID}..."
 
-IMAGE_STATE=''
-while [ "$IMAGE_STATE" != "available" ]; do
-  sleep 2
+IMAGE_STATE='pending'
+while [ "$IMAGE_STATE" = "pending" ]; do
+  sleep 10
   IMAGE_STATE=$($AWS ec2 describe-images --image-ids $IMAGE_ID --owners self | jq -r '.Images[].State')
 done
 echo "Image ${IMAGE_ID} is ${IMAGE_STATE}."
+
+if [ "$IMAGE_STATE" != 'available' ]; then
+  echo "Image creation failed, exiting."
+  exit 1
+fi
 
 TERMINATED_INSTANCE_ID=$($AWS ec2 terminate-instances --instance-ids $INSTANCE_ID | jq -r '.TerminatingInstances[].InstanceId')
 echo "Terminating instance ${TERMINATED_INSTANCE_ID}."
