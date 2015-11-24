@@ -2,6 +2,8 @@
 #
 class rk_tomcat::tomcat (
   $catalina_home,
+  $datahub_host,
+  $datahub_port,
   $postgres_driver,
   $postgres_tls,
   $tomcat_instance,
@@ -34,6 +36,9 @@ class rk_tomcat::tomcat (
     mode   => '0640',
     notify => Service[$tomcat_svc],
   }
+
+  # configure rsyslog to log to DataHub
+  class { 'rk_tomcat::rsyslog': } ->
 
   # install Tomcat package
   class { '::tomcat':
@@ -73,6 +78,18 @@ class rk_tomcat::tomcat (
     group  => 'root',
     mode   => '0755',
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
+  } ->
+
+  file { '/etc/rsyslog.d':
+    ensure => directory,
+  } ->
+
+  file { 'datahub-default.conf':
+    path    => '/etc/rsyslog.d/datahub-default.conf',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('rk_tomcat/datahub-default.conf.erb'),
   } ->
 
   # apr for performance
