@@ -46,6 +46,17 @@ $PUPPET apply \
 $LOGGER "Disabling Puppet agent..."
 $PUPPET resource service puppet ensure=stopped enable=false
 
+# pull PostgreSQL client cert from S3
+POSTGRES_CERTDIR='/home/tomcat/.postgresql'
+if [ -d "$POSTGRES_CERTDIR" ]; then
+  $LOGGER "Copying PostgreSQL client certificates to $POSTGRES_CERTDIR..."
+  $AWS s3 sync "s3://rk-devops-${REGION}/secrets/client_cert" "$POSTGRES_CERTDIR" \
+    && chmod 600 "${POSTGRES_CERTDIR}/*" \
+    && chown -R tomcat:tomcat "$POSTGRES_CERTDIR"
+else
+  $LOGGER "Directory $POSTGRES_CERTDIR not present, unable to copy PostgreSQL client certificates."
+fi
+
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
 

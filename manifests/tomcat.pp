@@ -3,6 +3,7 @@
 class rk_tomcat::tomcat (
   $catalina_home,
   $postgres_driver,
+  $postgres_tls,
   $tomcat_instance,
   $tomcat_pkg,
   $tomcat_native_pkg,
@@ -14,15 +15,25 @@ class rk_tomcat::tomcat (
   # Postgres
   $postgres_driver_jarfile = "${postgres_driver}.jar"
 
+  validate_bool($postgres_tls)
+  case $postgres_tls {
+    true : {
+      $postgres_certdir_state = 'directory'
+      $postgres_certdir_mode = '0600'
+    }
+    default : {
+      $postgres_certdir_state = 'absent'
+      $postgres_certdir_mode = undef
+    }
+  }
+
   File {
     ensure => 'present',
-    owner  => 'tomcat',
-    group  => 'tomcat',
+    owner  => $tomcat_user,
+    group  => $tomcat_group,
     mode   => '0640',
     notify => Service[$tomcat_svc],
   }
-
-  # apr for performance
 
   # install Tomcat package
   class { '::tomcat':
@@ -43,6 +54,11 @@ class rk_tomcat::tomcat (
     source => "puppet:///modules/rk_tomcat/${postgres_driver_jarfile}",
   } ->
 
+  file { "/home/${tomcat_user}/.postgresql":
+    ensure => $postgres_certdir_state,
+    mode   => $postgres_certdir_mode,
+  } ->
+
   file { 'provision.sh':
     path   => '/root/provision.sh',
     owner  => 'root',
@@ -59,6 +75,7 @@ class rk_tomcat::tomcat (
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
   } ->
 
+  # apr for performance
   package { $tomcat_native_pkg:
     ensure => present,
   } ->
