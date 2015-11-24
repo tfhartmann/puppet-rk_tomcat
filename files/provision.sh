@@ -110,7 +110,6 @@ PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
 $PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
-  --logdest syslog \
   -e 'class { "rk_tomcat": mode => "provision" }'
 
 $LOGGER "Disabling Puppet agent..."
