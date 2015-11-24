@@ -24,7 +24,7 @@ REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 
 AWS="aws --region $REGION"
 
-VPC_ID=$($AWS ec2 describe-instance --instance-ids ${INSTANCE_ID} | jq -r '.Reservations[].Instances[].VpcId')
+VPC_ID=$($AWS ec2 describe-instances --instance-ids ${INSTANCE_ID} | jq -r '.Reservations[].Instances[].VpcId')
 VPC=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${VPC_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
 APP_NAME=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Application')
 
