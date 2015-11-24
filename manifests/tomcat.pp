@@ -2,8 +2,6 @@
 #
 class rk_tomcat::tomcat (
   $catalina_home,
-  $datahub_host,
-  $datahub_port,
   $postgres_driver,
   $postgres_tls,
   $tomcat_instance,
