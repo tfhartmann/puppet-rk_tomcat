@@ -53,7 +53,7 @@ class rk_tomcat::deploy (
   $postgres_resources = $postgres.map |$key,$values| {
     {
       'name'      => $values[name],
-      'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}",
+      'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}${values[opts]}",
       'username'  => $values[user],
       'password'  => $values[password],
       'maxactive' => $values[max_conn],
