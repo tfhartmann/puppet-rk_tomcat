@@ -75,6 +75,11 @@ class rk_tomcat::tomcat (
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
   } ->
 
+  file { '/home/tomcat':
+    ensure => link,
+    target => $catalina_home,
+  } ->
+
   # apr for performance
   package { $tomcat_native_pkg:
     ensure => present,
