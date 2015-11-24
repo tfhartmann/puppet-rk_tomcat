@@ -51,9 +51,17 @@ class rk_tomcat::deploy (
   # Postgres
   $postgres = lookup('rk_tomcat::deploy::postgres', { 'value_type' => Hash })
   $postgres_resources = $postgres.map |$key,$values| {
+    # opts is an optional hash key
+    if ( has_key($values, 'opts') ) {
+      $opts = $values[opts]
+    }
+    else {
+      $opts = ''
+    }
+
     {
       'name'      => $values[name],
-      'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}${values[opts]}",
+      'url'       => "jdbc:postgresql://${values[host]}:${values[port]}/${values[db]}${opts}",
       'username'  => $values[user],
       'password'  => $values[password],
       'maxactive' => $values[max_conn],
