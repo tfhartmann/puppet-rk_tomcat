@@ -35,9 +35,6 @@ class rk_tomcat::tomcat (
     notify => Service[$tomcat_svc],
   }
 
-  # configure rsyslog to log to DataHub
-  class { 'rk_tomcat::rsyslog': } ->
-
   # install Tomcat package
   class { '::tomcat':
     install_from_source => false,
@@ -78,18 +75,6 @@ class rk_tomcat::tomcat (
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
   } ->
 
-  file { '/etc/rsyslog.d':
-    ensure => directory,
-  } ->
-
-  file { 'datahub-default.conf':
-    path    => '/etc/rsyslog.d/datahub-default.conf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('rk_tomcat/datahub-default.conf.erb'),
-  } ->
-
   # apr for performance
   package { $tomcat_native_pkg:
     ensure => present,
@@ -102,4 +87,7 @@ class rk_tomcat::tomcat (
     service_ensure => 'stopped',
     service_enable => true,
   }
+
+  # configure rsyslog to log to DataHub
+  class { 'rk_tomcat::rsyslog': }
 }

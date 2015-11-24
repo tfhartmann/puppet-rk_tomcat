@@ -13,6 +13,11 @@ class rk_tomcat::rsyslog(
   }
 
   # default logging to DataHub
+  file { '/etc/rsyslog.d':
+    ensure => directory,
+    mode   => '0755',
+  }
+
   file { "datahub-default":
     path    => '/etc/rsyslog.d/50-datahub-default.conf',
     content => template('rk_tomcat/datahub-default.conf.erb'),
