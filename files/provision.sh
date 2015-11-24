@@ -9,6 +9,9 @@ if [[ "${USER}" -ne 0 ]]; then
   exit 1
 fi
 
+# can't do much without jq
+yum -y -q install jq || exit 1
+
 if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
   . /etc/profile.d/aws-apitools-common.sh
 fi
@@ -48,7 +51,7 @@ $LOGGER "Uninstalling upstream Puppet..."
 yum -y erase puppet
 
 $LOGGER "Installing utilities..."
-yum -y install git jq
+yum -y install git
 
 cd ~
 
