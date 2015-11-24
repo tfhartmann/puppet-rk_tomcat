@@ -23,6 +23,7 @@ AWS="aws --region $REGION"
 
 VPC_ID=$($AWS ec2 describe-instance --instance-ids ${INSTANCE_ID} | jq -r '.Reservations[].Instances[].VpcId')
 VPC=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${VPC_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+APP_NAME=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Application')
 
 # log to DataHub
 RSYSLOG_D='/etc/rsyslog.d'
@@ -34,6 +35,8 @@ if [ -d "$RSYSLOG_D" ]; then
 RSYSLOG
 
   service rsyslog restart
+
+  LOGGER="logger -t ${APP_NAME} -p daemon.info"
 fi
 
 $LOGGER "Provisioning..."
