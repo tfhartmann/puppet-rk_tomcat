@@ -1,6 +1,8 @@
 #!/bin/bash -l
 #
-LOGGER='logger -t [CLOUDINIT] -p user.info'
+
+# set up logging
+LOGGER='logger -t [CLOUDINIT] -p daemon.info'
 
 if [[ "${USER}" -ne 0 ]]; then
   $LOGGER "$0 must be run as root."
@@ -18,6 +20,21 @@ AZ=$(ec2-metadata -z | awk '{print $2}')
 REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 
 AWS="aws --region $REGION"
+
+VPC_ID=$($AWS ec2 describe-instance --instance-ids ${INSTANCE_ID} | jq -r '.Reservations[].Instances[].VpcId')
+VPC=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${VPC_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+
+# log to DataHub
+RSYSLOG_D='/etc/rsyslog.d'
+if [ -d "$RSYSLOG_D" ]; then
+  cat > "${RSYSLOG_D}/50-datahub-default.conf" <<RSYSLOG
+# log to DataHub
+#
+*.info;mail.none;authpriv.none;cron.none                @@datahub.${VPC}.vpc.rkcloud.us:10000
+RSYSLOG
+
+  service rsyslog restart
+fi
 
 $LOGGER "Provisioning..."
 
