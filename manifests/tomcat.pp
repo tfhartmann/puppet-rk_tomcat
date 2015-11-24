@@ -54,11 +54,6 @@ class rk_tomcat::tomcat (
     source => "puppet:///modules/rk_tomcat/${postgres_driver_jarfile}",
   } ->
 
-  file { "/home/${tomcat_user}/.postgresql":
-    ensure => $postgres_certdir_state,
-    mode   => $postgres_certdir_mode,
-  } ->
-
   file { 'provision.sh':
     path   => '/root/provision.sh',
     owner  => 'root',
@@ -95,4 +90,10 @@ class rk_tomcat::tomcat (
 
   # configure rsyslog to log to DataHub
   class { 'rk_tomcat::rsyslog': }
+
+  # make a directory to hold PostgreSQL client certs
+  file { "/home/${tomcat_user}/.postgresql":
+    ensure => $postgres_certdir_state,
+    mode   => $postgres_certdir_mode,
+  }
 }
