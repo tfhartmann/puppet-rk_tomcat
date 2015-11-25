@@ -136,4 +136,21 @@ class rk_tomcat::deploy (
       command => 'echo "STUB FOR PREWARMING DISK CACHE"',
     }
   }
+
+  # make a directory for PostgreSQL client certs on prod deploys only
+  case $tier {
+    'production': {
+      $postgres_certdir_ensure = 'directory'
+      $postgres_certdir_mode   = '0750'
+    }
+    default: {
+      $postgres_certdir_ensure = 'absent'
+      $postgres_certdir_mode   = undef
+    }
+  }
+
+  file { "${catalina_home}/.postgresql":
+    ensure => $postgres_certdir_ensure,
+    mode   => $postgres_certdir_mode,
+  }
 }
