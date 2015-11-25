@@ -134,12 +134,6 @@ class rk_tomcat::deploy (
 
   class { 'rk_tomcat::newrelic::deploy': }
 
-  if ( 'dashboard' in $artifacts ) {
-    exec { 'prewarmTomcat':
-      command => 'echo "STUB FOR PREWARMING DISK CACHE"',
-    }
-  }
-
   # make a directory for PostgreSQL client certs on prod deploys only
   case $tier {
     'production': {
