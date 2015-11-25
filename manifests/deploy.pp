@@ -18,8 +18,8 @@ class rk_tomcat::deploy (
   $tomcat_svc,
 ) {
 
-  if ( $staging_instance ) {
-    if ( $staging_instance =~ /loadtest/ ) {
+  case $staging_instance {
+    /loadtest/: {
       $cloudant_suffix  = "-loadtest"
       $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
       $log_identifier   = "loadtest-${log_identifiers[0]}"
@@ -28,7 +28,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'loadtest'
       $platform_env     = 'STAGE'
     }
-    else {
+    /^stage/: {
       $cloudant_suffix  = "-${staging_instance}"
       $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
       $log_identifier   = "$staging_instance-${log_identifiers[0]}"
@@ -37,15 +37,18 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'staging'
       $platform_env     = 'STAGE'
     }
-  }
-  else {
-    $cloudant_suffix  = ''
-    $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
-    $log_identifier   = $log_identifiers[0]
-    $queue_identifier = ''
-    $tier             = 'production'
-    $newrelic_env     = 'production'
-    $platform_env     = 'PRODUCTION'
+    '': {
+      $cloudant_suffix  = ''
+      $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
+      $log_identifier   = $log_identifiers[0]
+      $queue_identifier = ''
+      $tier             = 'production'
+      $newrelic_env     = 'production'
+      $platform_env     = 'PRODUCTION'
+    }
+    default: {
+      fail("Unable to parse staging_instance parameter '${staging_instance}'.")
+    }
   }
 
   # Postgres
