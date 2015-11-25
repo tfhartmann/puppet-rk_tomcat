@@ -81,6 +81,10 @@ class rk_tomcat::deploy (
   $sqs_access_key = $aws_keys['sqs']['access_key']
   $sqs_secret_key = $aws_keys['sqs']['secret_key']
 
+  # S3
+  $logback_access_key = $aws_keys['s3']['analytics']['access_key']
+  $logback_secret_key = $aws_keys['s3']['analytics']['secret_key']
+
   File {
     ensure => 'present',
     owner  => 'tomcat',
