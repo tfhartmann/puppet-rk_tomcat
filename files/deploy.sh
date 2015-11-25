@@ -12,12 +12,15 @@ if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
 fi
 
 INSTANCE_ID=$(ec2-metadata -i | awk '{print $2}')
-
 # determine AWS region
 AZ=$(ec2-metadata -z | awk '{print $2}')
 REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
 
 AWS="aws --region $REGION"
+
+INSTANCE_NAME=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+
+LOGGER="logger -t ${INSTANCE_NAME} -p daemon.info"
 
 $LOGGER "Deploying..."
 
