@@ -59,7 +59,7 @@ POSTGRES_CERTDIR='/home/tomcat/.postgresql'
 mkdir -p "$POSTGRES_CERTDIR"
 if [ -d "$POSTGRES_CERTDIR" ]; then
   $LOGGER "Copying PostgreSQL client certificates to $POSTGRES_CERTDIR..."
-  $AWS s3 sync "s3://rk-devops-${REGION}/secrets/client_cert" "$POSTGRES_CERTDIR" \
+  $AWS s3 sync "s3://rk-devops-${REGION}/secrets/client_certs" "$POSTGRES_CERTDIR" \
     && chmod 600 "${POSTGRES_CERTDIR}/*" \
     && chown -R tomcat:tomcat "$POSTGRES_CERTDIR"
 else
