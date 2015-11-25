@@ -26,6 +26,7 @@ class rk_tomcat::deploy (
       $queue_identifier = 'loadtest'
       $tier             = 'loadtest'
       $newrelic_env     = 'loadtest'
+      $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
     }
     /^stage/: {
@@ -35,6 +36,7 @@ class rk_tomcat::deploy (
       $queue_identifier = $staging_instance
       $tier             = 'staging'
       $newrelic_env     = 'staging'
+      $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
     }
     '': {
@@ -44,6 +46,7 @@ class rk_tomcat::deploy (
       $queue_identifier = ''
       $tier             = 'production'
       $newrelic_env     = 'production'
+      $conf_tier        = 'production'
       $platform_env     = 'PRODUCTION'
     }
     default: {
