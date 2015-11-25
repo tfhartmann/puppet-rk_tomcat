@@ -36,17 +36,27 @@ fi
 cd rk_tomcat
 
 $LOGGER "Running Puppet agent..."
+PUPPET_LOGDIR=/var/log/puppet
 PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
 $PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
+  --logdest "${PUPPET_LOGDIR}/deploy.log" \
   -e 'class { "rk_tomcat": mode => "deploy" }'
+
+if [ -r "${PUPPET_LOGDIR}/deploy.log" ]; then
+  $LOGGER "Uploading deploy log to S3..."
+  $AWS s3 cp "${PUPPET_LOGDIR}/deploy.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_NAME}"
+else
+  $LOGGER "No deploy log found."
+fi
 
 $LOGGER "Disabling Puppet agent..."
 $PUPPET resource service puppet ensure=stopped enable=false
 
 # pull PostgreSQL client cert from S3
 POSTGRES_CERTDIR='/home/tomcat/.postgresql'
+mkdir -p "$POSTGRES_CERTDIR"
 if [ -d "$POSTGRES_CERTDIR" ]; then
   $LOGGER "Copying PostgreSQL client certificates to $POSTGRES_CERTDIR..."
   $AWS s3 sync "s3://rk-devops-${REGION}/secrets/client_cert" "$POSTGRES_CERTDIR" \

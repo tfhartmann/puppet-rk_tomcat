@@ -70,11 +70,6 @@ class rk_tomcat::tomcat (
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
   } ->
 
-  file { '/home/tomcat':
-    ensure => link,
-    target => $catalina_home,
-  } ->
-
   # apr for performance
   package { $tomcat_native_pkg:
     ensure => present,
@@ -90,10 +85,4 @@ class rk_tomcat::tomcat (
 
   # configure rsyslog to log to DataHub
   class { 'rk_tomcat::rsyslog': }
-
-  # make a directory to hold PostgreSQL client certs
-  file { "/home/${tomcat_user}/.postgresql":
-    ensure => $postgres_certdir_state,
-    mode   => $postgres_certdir_mode,
-  }
 }

@@ -104,16 +104,28 @@ cat > /etc/hiera/hiera.yaml << 'HIERA'
 :backends:
   - module_data
 HIERA
-mkdir -p /var/log/puppet
+PUPPET_LOGDIR=/var/log/puppet
+mkdir -p "$PUPPET_LOGDIR"
 
 PUPPET=$(which puppet 2>/dev/null || echo '/usr/local/bin/puppet')
 $PUPPET apply \
   --hiera_config "/etc/hiera/hiera.yaml" \
   --modulepath "$(pwd)/modules:/etc/puppetlabs/code/modules" \
+  --logdest "${PUPPET_LOGDIR}/provision.log" \
   -e 'class { "rk_tomcat": mode => "provision" }'
+
+if [ -r "${PUPPET_LOGDIR}/provision.log" ]; then
+  $LOGGER "Uploading provisioning log to S3..."
+  $AWS s3 cp "${PUPPET_LOGDIR}/provision.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_NAME}"
+else
+  $LOGGER "No provisioning log found."
+fi
 
 $LOGGER "Disabling Puppet agent..."
 $PUPPET resource service puppet ensure=stopped enable=false
+
+$LOGGER "Linking Tomcat homedir to CATALINA_HOME..."
+ln -s /usr/share/tomcat7 /home/tomcat
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
