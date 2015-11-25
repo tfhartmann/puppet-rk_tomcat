@@ -70,6 +70,8 @@ class rk_tomcat::deploy (
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
   $logentries_applogs_token = $logentries_tokens['applogs']
+  # this is legacy :( FIXME
+  $serverAlias = $log_identifier
 
   # Redis
   $redis_pushnotif_uri = "redis://${redis_host}:${redis_port}/${redis_pushnotif_db}"
