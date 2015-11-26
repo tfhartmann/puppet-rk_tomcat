@@ -66,8 +66,8 @@ echo "Creating instance ${INSTANCE_ID} from image ${GOLD_MASTER_AMI}."
 
 # copy secrets file into place
 SECRETS_SOURCE="secrets-${BUILD_TARGET}.yaml"
-SECRETS_TARGET="secrets-${INSTANCE_ID}.yaml"
-$AWS s3 cp "s3://rk-devops-${REGION}/secrets/${SECRETS_SOURCE}" "s3://rk-devops-${REGION}/secrets/instances/${SECRETS_TARGET}"
+SECRETS_TARGET="instances/${INSTANCE_ID}.yaml"
+$AWS s3 cp "s3://rk-devops-${REGION}/secrets/${SECRETS_SOURCE}" "s3://rk-devops-${REGION}/secrets/${SECRETS_TARGET}"
 
 # wait for hostname
 INSTANCE_HOSTNAME=''
