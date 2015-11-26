@@ -27,9 +27,10 @@ $LOGGER "Deploying..."
 $LOGGER "Copying secrets..."
 for i in 'secrets' 'secrets-common'; do
   touch "rk_tomcat/data/${i}.yaml" \
-    && chmod 600 "rk_tomcat/data/${i}.yaml" \
-    && $AWS s3 cp "s3://rk-devops-${REGION}/secrets/${i}.yaml" "rk_tomcat/data/${i}.yaml"
+    && chmod 600 "rk_tomcat/data/${i}.yaml"
 done
+$AWS s3 cp "s3://rk-devops-${REGION}/secrets/secrets-common.yaml" "rk_tomcat/data/secrets-common.yaml"
+$AWS s3 cp "s3://rk-devops-${REGION}/secrets/instances/${INSTANCE_ID}.yaml" "rk_tomcat/data/secrets.yaml"
 
 if [ ! -r "rk_tomcat/data/secrets.yaml" ]; then
   $LOGGER "Populate the secrets.yaml file and then run $0 again."
