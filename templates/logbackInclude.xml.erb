@@ -29,7 +29,8 @@
       ch.qos.logback,
       org.tuckey.web.filters,
       com.thetransactioncompany.cors,
-      org.apache.tomcat.util
+      org.apache.tomcat.util,
+      com.fasterxml.jackson
    "/>
 
    <property name="filePattern"       value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
