@@ -81,14 +81,14 @@
       <encoder>
          <pattern>%msg%n</pattern>
       </encoder>
-      
+
       <%# TODO: Remove these keys when we switch to use IAM roles after AWS migration -%>
-      <accessKey>AKIAINEPMXG4YZQD6W3A</accessKey>
-      <secretKey>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</secretKey>
-      
+      <accessKey><%= @logback_access_key %></accessKey>
+      <secretKey><%= @logback_secret_key %></secretKey>
+
       <bucketName>rk-etl-data</bucketName>
       <bucketDir>analytics-logback/${s3DirPrefix}/${appName}</bucketDir>
-      
+
       <rollingPolicy class="com.logpig.mweagle.rolling.S3TimeBasedRollingPolicy">
          <fileNamePattern>${logFileDir}/analytics-logback/${appName}_events.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
       </rollingPolicy>
@@ -140,11 +140,11 @@
 
    <root level="INFO">
       <appender-ref ref="${appenderRef}" />
-      
+
 <%- if @tier != "loadtest" -%>
       <appender-ref ref="APPLOGS_LOGENTRIES" />
 <%- end -%>
-      
+
 <%- if @tier == "production" -%>
       <appender-ref ref="NEWRELIC" />
 <%- end -%>
@@ -170,11 +170,11 @@
 
    <logger name="analytics" additivity="false">
       <level value="INFO"/>
-      
+
 <%- if @tier != "loadtest" -%>
       <appender-ref ref="ANALYTICS_FILE" />
 <%- end -%>
-      
+
 <%- if @tier == "staging" -%>
       <appender-ref ref="ANALYTICS_LOGENTRIES"/>
 <%- end -%>

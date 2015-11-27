@@ -10,6 +10,11 @@ else
   exit 1
 fi
 
+if [ -z "$BUILD_TARGET" ]; then
+  echo "No build target found, exiting."
+  exit 1
+fi
+
 STATE='.state'
 
 # determine region
@@ -58,9 +63,14 @@ let IMAGE_INDEX++
 $AWS ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=tomcat7-${BUILD_TARGET}-${IMAGE_INDEX}"
 
 echo "Creating instance ${INSTANCE_ID} from image ${GOLD_MASTER_AMI}."
-INSTANCE_HOSTNAME=''
+
+# copy secrets file into place
+SECRETS_SOURCE="secrets-${BUILD_TARGET}.yaml"
+SECRETS_TARGET="instances/${INSTANCE_ID}.yaml"
+$AWS s3 cp "s3://rk-devops-${REGION}/secrets/${SECRETS_SOURCE}" "s3://rk-devops-${REGION}/secrets/${SECRETS_TARGET}"
 
 # wait for hostname
+INSTANCE_HOSTNAME=''
 while [ -z "$INSTANCE_HOSTNAME" ]; do
   sleep 2
   INSTANCE_HOSTNAME=$($AWS ec2 describe-instances --instance-ids $INSTANCE_ID | jq -r '.Reservations[].Instances[].PrivateDnsName')

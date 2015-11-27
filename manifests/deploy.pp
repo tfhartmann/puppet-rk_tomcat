@@ -18,34 +18,40 @@ class rk_tomcat::deploy (
   $tomcat_svc,
 ) {
 
-  if ( $staging_instance ) {
-    if ( $staging_instance =~ /loadtest/ ) {
+  case $staging_instance {
+    /loadtest/: {
       $cloudant_suffix  = "-loadtest"
       $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
       $log_identifier   = "loadtest-${log_identifiers[0]}"
       $queue_identifier = 'loadtest'
       $tier             = 'loadtest'
       $newrelic_env     = 'loadtest'
+      $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
     }
-    else {
+    /^stage/: {
       $cloudant_suffix  = "-${staging_instance}"
       $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
       $log_identifier   = "$staging_instance-${log_identifiers[0]}"
       $queue_identifier = $staging_instance
       $tier             = 'staging'
       $newrelic_env     = 'staging'
+      $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
     }
-  }
-  else {
-    $cloudant_suffix  = ''
-    $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
-    $log_identifier   = $log_identifiers[0]
-    $queue_identifier = ''
-    $tier             = 'production'
-    $newrelic_env     = 'production'
-    $platform_env     = 'PRODUCTION'
+    '': {
+      $cloudant_suffix  = ''
+      $log_identifiers  = $artifacts.map |$pair| { $pair[0] }
+      $log_identifier   = $log_identifiers[0]
+      $queue_identifier = ''
+      $tier             = 'production'
+      $newrelic_env     = 'production'
+      $conf_tier        = 'production'
+      $platform_env     = 'PRODUCTION'
+    }
+    default: {
+      fail("Unable to parse staging_instance parameter '${staging_instance}'.")
+    }
   }
 
   # Postgres
@@ -64,6 +70,8 @@ class rk_tomcat::deploy (
   # Logentries
   $logentries_analytics_token = $logentries_tokens['analytics']
   $logentries_applogs_token = $logentries_tokens['applogs']
+  # this is legacy :( FIXME
+  $serverAlias = $log_identifier
 
   # Redis
   $redis_pushnotif_uri = "redis://${redis_host}:${redis_port}/${redis_pushnotif_db}"
@@ -72,6 +80,10 @@ class rk_tomcat::deploy (
   # SQS
   $sqs_access_key = $aws_keys['sqs']['access_key']
   $sqs_secret_key = $aws_keys['sqs']['secret_key']
+
+  # S3
+  $logback_access_key = $aws_keys['s3']['analytics']['access_key']
+  $logback_secret_key = $aws_keys['s3']['analytics']['secret_key']
 
   File {
     ensure => 'present',
@@ -130,12 +142,6 @@ class rk_tomcat::deploy (
   }
 
   class { 'rk_tomcat::newrelic::deploy': }
-
-  if ( 'dashboard' in $artifacts ) {
-    exec { 'prewarmTomcat':
-      command => 'echo "STUB FOR PREWARMING DISK CACHE"',
-    }
-  }
 
   # make a directory for PostgreSQL client certs on prod deploys only
   case $tier {
