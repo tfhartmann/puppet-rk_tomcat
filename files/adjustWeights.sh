@@ -33,17 +33,18 @@ if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
 fi
 
-CHANGEFILE="${TMPDIR}/change"
+for i in $(cat $RECORDSFILE); do
+  CHANGEFILE="${TMPDIR}/change-${i}"
+  TMPFILE=$(mktemp -t ${TMPDIR})
 
-# write changefile header
-cat > "$CHANGEFILE" <<CHANGEFILE_HEADER
-{
-  "Comment": "setting weights Rimu: ${WEIGHT_RIMU} AWS: ${WEIGHT_AWS}",
-  "Changes": [
+  # write changefile header
+  cat > "$TMPFILE" <<CHANGEFILE_HEADER
+  {
+    "Comment": "setting weights Rimu: ${WEIGHT_RIMU} AWS: ${WEIGHT_AWS}",
+    "Changes": [
 CHANGEFILE_HEADER
 
-for i in $(cat $RECORDSFILE); do
-  echo "Adjusting weight for '${i}'..."
+  echo "Adjusting Rimu weight for '${i}'..."
   DOMAIN=$(echo -n "$i" | egrep -o '[[:alnum:]]+\.[[:alnum:]]+\.?$')
 
   if [ -z "$DOMAIN" ]; then
@@ -53,8 +54,10 @@ for i in $(cat $RECORDSFILE); do
     echo "Looking up zone ID for '${DOMAIN}'..."
   fi
 
-  JQ_FILTER=$(echo -n ".HostedZones | map(select(.Name == \"" && echo -n "${DOMAIN}." && echo -n "\"))[] | .Id")
-  ZONE_ID=$($AWS route53 list-hosted-zones-by-name --dns-name $DOMAIN --max-items 1 | jq -r "$JQ_FILTER")
+  ZONE=$($AWS route53 list-hosted-zones-by-name --dns-name $DOMAIN --max-items 1)
+
+  JQ_ZONE_ID_FILTER=$(echo -n ".HostedZones | map(select(.Name == \"" && echo -n "${DOMAIN}." && echo -n "\"))[] | .Id")
+  ZONE_ID=$(echo "$ZONE" | jq -r "$JQ_ZONE_ID_FILTER")
 
   if [ -z "$ZONE_ID" ]; then
     echo "Unable to determine zone ID for domain '${DOMAIN}', exiting."
@@ -63,43 +66,55 @@ for i in $(cat $RECORDSFILE); do
     echo "Found zone ID '${ZONE_ID}' for domain '${DOMAIN}'."
   fi
 
+  RECORDS=$($AWS route53 list-resource-record-sets --hosted-zone-id ${ZONE_ID})
+  if [ -z "$RECORDS" ]; then
+    echo "No resource records found for domain '${DOMAIN}', exiting."
+    exit 1
+  else
+    echo "Retrieved resource records for domain '${DOMAIN}'."
+  fi
+
+  JQ_RIMU_CHANGE_FILTER=$(echo -n ".ResourceRecordSets | map(select(.Type == \"A\")) | map(select(.SetIdentifier == \"" && echo -n "${i}-Rimu" && echo -n "\")) | map(. + {Weight: ${WEIGHT_RIMU}})[0] | {ResourceRecordSet: .} + {Action: \"UPSERT\"}")
+  RIMU_CHANGE=$(echo "$RECORDS" | jq "$JQ_RIMU_CHANGE_FILTER")
+
+  JQ_AWS_CHANGE_FILTER=$(echo -n ".ResourceRecordSets | map(select(.Type == \"A\")) | map(select(.SetIdentifier == \"" && echo -n "${i}-AWS" && echo -n "\")) | map(. + {Weight: ${WEIGHT_AWS}})[0] | {ResourceRecordSet: .} + {Action: \"UPSERT\"}")
+  AWS_CHANGE=$(echo "$RECORDS" | jq "$JQ_AWS_CHANGE_FILTER")
+
   # write the change for each record
-  cat >> "$CHANGEFILE" <<CHANGEFILE_CHANGE
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "${i}.",
-        "Type": "A",
-        "SetIdentifier": "${i}-Rimu",
-        "Weight": ${WEIGHT_RIMU}
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "${i}.",
-        "Type": "A",
-        "SetIdentifier": "${i}-AWS",
-        "Weight": ${WEIGHT_AWS}
-      }
-    }
-CHANGEFILE_CHANGE
+  echo -n "$RIMU_CHANGE" >> "$TMPFILE"
+  echo "," >> "$TMPFILE"
+  echo "$AWS_CHANGE" >> "$TMPFILE"
 
-done
-
-# write changefile footer
-cat >> "$CHANGEFILE" <<CHANGEFILE_FOOTER
-  ]
-}
+  # write changefile footer
+  cat >> "$TMPFILE" <<CHANGEFILE_FOOTER
+    ]
+  }
 CHANGEFILE_FOOTER
 
-if [ -r "$CHANGEFILE" ]; then
-  CHANGE_BATCH=$(cat "${CHANGEFILE}" | jq -c .)
-else
-  echo "Unable to read changefile '${CHANGEFILE}', exiting."
-  exit 1
-fi
+  # clean up formatting
+  cat "$TMPFILE" | jq . > "$CHANGEFILE"
 
-ROUTE53_CMD="$AWS route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch '${CHANGE_BATCH}'"
+  if [ -r "$CHANGEFILE" ]; then
+    CHANGE_BATCH=$(cat "${CHANGEFILE}" | jq -c .)
+  else
+    echo "Unable to read changefile '${CHANGEFILE}', exiting."
+    exit 1
+  fi
 
-eval $ROUTE53_CMD
+  ROUTE53_CMD="$AWS route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch '${CHANGE_BATCH}'"
+
+  CHANGE_INFO=$(eval $ROUTE53_CMD)
+
+  CHANGE_ID=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Id')
+  CHANGE_STATUS=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Status')
+
+  while [ "$CHANGE_STATUS" != 'INSYNC' ]; do
+    sleep 2;
+    CHANGE_INFO=$($AWS route53 get-change --id ${CHANGE_ID})
+    CHANGE_STATUS=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Status')
+    echo "Status of change '${CHANGE_ID}' is '${CHANGE_STATUS}' at $(date)."
+  done
+
+  echo "$CHANGE_INFO" | jq .
+
+done
