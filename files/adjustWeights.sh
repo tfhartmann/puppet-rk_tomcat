@@ -63,6 +63,28 @@ for i in $(cat $RECORDSFILE); do
     echo "Found zone ID '${ZONE_ID}' for domain '${DOMAIN}'."
   fi
 
+  # write the change for each record
+  cat >> "$CHANGEFILE" <<CHANGEFILE_CHANGE
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "${i}.",
+        "Type": "A",
+        "SetIdentifier": "${i}-Rimu",
+        "Weight": ${WEIGHT_RIMU}
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "${i}.",
+        "Type": "A",
+        "SetIdentifier": "${i}-AWS",
+        "Weight": ${WEIGHT_AWS}
+      }
+    }
+CHANGEFILE_CHANGE
+
 done
 
 # write changefile footer
@@ -72,8 +94,12 @@ cat >> "$CHANGEFILE" <<CHANGEFILE_FOOTER
 CHANGEFILE_FOOTER
 
 if [ -r "$CHANGEFILE" ]; then
-  cat "${CHANGEFILE}"
+  CHANGE_BATCH=$(cat "${CHANGEFILE}" | jq -c .)
 else
   echo "Unable to read changefile '${CHANGEFILE}', exiting."
   exit 1
 fi
+
+ROUTE53_CMD="$AWS route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch '${CHANGE_BATCH}'"
+
+eval $ROUTE53_CMD
