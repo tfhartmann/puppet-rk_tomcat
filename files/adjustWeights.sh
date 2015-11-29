@@ -103,18 +103,23 @@ CHANGEFILE_FOOTER
 
   ROUTE53_CMD="$AWS route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch '${CHANGE_BATCH}'"
 
-  CHANGE_INFO=$(eval $ROUTE53_CMD)
+  if [ "$WEIGHT_REALLY_FOR_REALS" = "yes really i mean it" ]; then
+    CHANGE_INFO=$(eval $ROUTE53_CMD)
 
-  CHANGE_ID=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Id')
-  CHANGE_STATUS=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Status')
-
-  while [ "$CHANGE_STATUS" != 'INSYNC' ]; do
-    sleep 2;
-    CHANGE_INFO=$($AWS route53 get-change --id ${CHANGE_ID})
+    CHANGE_ID=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Id')
     CHANGE_STATUS=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Status')
-    echo "Status of change '${CHANGE_ID}' is '${CHANGE_STATUS}' at $(date)."
-  done
 
-  echo "$CHANGE_INFO" | jq .
+    while [ "$CHANGE_STATUS" != 'INSYNC' ]; do
+      sleep 5;
+      CHANGE_INFO=$($AWS route53 get-change --id ${CHANGE_ID})
+      CHANGE_STATUS=$(echo "$CHANGE_INFO" | jq -r '.ChangeInfo.Status')
+      echo "Status of change '${CHANGE_ID}' is '${CHANGE_STATUS}' at $(date)."
+    done
+
+    echo "$CHANGE_INFO" | jq .
+  else
+    echo $ROUTE53_CMD
+    cat $CHANGEFILE
+  fi
 
 done
