@@ -4,6 +4,7 @@ class rk_tomcat::newrelic::deploy(
   $app_name,
   $attr_include,
   $attr_exclude,
+  $ignore_status_codes,
   $license,
 ) inherits rk_tomcat::newrelic {
 
