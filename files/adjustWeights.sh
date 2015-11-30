@@ -14,6 +14,17 @@ else
   exit 1
 fi
 
+# sanity checking
+if [ -z "$WEIGHT_RIMU" ]; then
+  echo "No WEIGHT_RIMU variable found, exiting."
+  exit 1
+fi
+
+if [ -z "$WEIGHT_AWS" ]; then
+  echo "No WEIGHT_AWS variable found, exiting."
+  exit 1
+fi
+
 # read domains
 RECORDSFILE=".records"
 
@@ -33,7 +44,9 @@ if [ ! -d "$TMPDIR" ]; then
   mkdir -p "$TMPDIR"
 fi
 
-for i in $(cat $RECORDSFILE); do
+rm -f "${TMPDIR}/*"
+
+for i in $(cat $RECORDSFILE | grep -v '^#'); do
   CHANGEFILE="${TMPDIR}/change-${i}"
   TMPFILE=$(mktemp -t ${TMPDIR})
 
@@ -44,7 +57,7 @@ for i in $(cat $RECORDSFILE); do
     "Changes": [
 CHANGEFILE_HEADER
 
-  echo "Adjusting Rimu weight for '${i}'..."
+  echo "Adjusting weights for record '${i}'..."
   DOMAIN=$(echo -n "$i" | egrep -o '[[:alnum:]]+\.[[:alnum:]]+\.?$')
 
   if [ -z "$DOMAIN" ]; then
