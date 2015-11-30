@@ -16,6 +16,7 @@ class rk_tomcat::deploy (
   $stack,
   $staging_instance,
   $tomcat_svc,
+  $warname,
 ) {
 
   case $staging_instance {
@@ -97,7 +98,6 @@ class rk_tomcat::deploy (
     logoutput => 'on_failure',
   }
 
-  # populate config files by hand, ugh
   file { 'deployBuild.sh':
     path    => "${catalina_home}/bin/deployBuild.sh",
     content => template('rk_tomcat/deployBuild.sh.erb'),

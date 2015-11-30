@@ -33,7 +33,11 @@ service <%= @tomcat_svc %> stop
 <%- @artifacts.each do |artifact, war| -%>
 echo "### Deploying artifact '<%= war %>' for '<%= artifact %>'..."
 SOURCE="${S3_URI_PREFIX}/${BUILD_NUMBER}/<%= war %>"
+<%- if ( @tier == 'production' ) -%>
+TARGET="<%= @catalina_home %>/webapps/<%= @warname %>"
+<%- else -%>
 TARGET="<%= @catalina_home %>/webapps/<%= war %>"
+<%- end -%>
 $AWS s3 cp "$SOURCE" "$TARGET" &&
 chown <%= @tomcat_user %>:<%= @tomcat_group %> "$TARGET"
 
