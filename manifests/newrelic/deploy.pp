@@ -6,10 +6,17 @@ class rk_tomcat::newrelic::deploy(
   $attr_exclude,
   $ignore_status_codes,
   $license,
+  $newrelic_enabled,
 ) inherits rk_tomcat::newrelic {
+  validate_bool($newrelic_enabled)
+
+  $ensure = $newrelic_enabled ? {
+    false   => 'absent',
+    default => 'present',
+  }
 
   file { "$newrelic_dir/newrelic.yml":
-    ensure  => present,
+    ensure  => $ensure,
     owner   => $rk_tomcat::newrelic::tomcat_user,
     group   => $rk_tomcat::newrelic::tomcat_group,
     mode    => '0640',

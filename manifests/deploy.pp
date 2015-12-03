@@ -18,6 +18,7 @@ class rk_tomcat::deploy (
   $tomcat_svc,
   $warname,
 ) {
+  validate_bool($newrelic)
 
   case $staging_instance {
     /loadtest/: {
