@@ -136,11 +136,6 @@ class rk_tomcat::deploy (
     content => template('rk_tomcat/tomcat7.conf.erb'),
   } ->
 
-  file { 'catalina.properties':
-    path    => "${catalina_home}/conf/catalina.properties",
-    content => template('rk_tomcat/catalina.properties.erb'),
-  } ->
-
   exec { 'deployBuild':
     command => 'deployBuild.sh',
     unless  => "ls ${catalina_home}/webapps/*.war >/dev/null 2>&1",
