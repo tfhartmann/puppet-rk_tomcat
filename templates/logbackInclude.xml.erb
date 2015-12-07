@@ -34,7 +34,7 @@
    "/>
 
    <property name="filePattern"       value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
-   <property name="logentriesPattern" value="%cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}} [<%= @serverAlias %>]%n%rEx{full,${ignoredStackTrace}}" />
+   <property name="logentriesPattern" value="%cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
 
    <!--********************************************************************************************-->
    <!-- Define our appenders                                                                       -->
@@ -55,15 +55,15 @@
          <property name="appenderRef" value="FILE" />
 
          <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${logFileDir}/logback.${appName}.log.txt</file>
+            <file>${logFileDir}/logback.${appName}.log</file>
             <append>true</append>
             <encoder>
                <pattern>${filePattern}</pattern>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-               <fileNamePattern>${logFileDir}/logback.${appName}.log.%d{yyyy-MM-dd}.txt</fileNamePattern>
+               <fileNamePattern>${logFileDir}/logback.${appName}.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
                <cleanHistoryOnStart>true</cleanHistoryOnStart>
-               <maxHistory>7</maxHistory>
+               <maxHistory>24</maxHistory>
             </rollingPolicy>
          </appender>
 
@@ -91,6 +91,7 @@
 
       <rollingPolicy class="com.logpig.mweagle.rolling.S3TimeBasedRollingPolicy">
          <fileNamePattern>${logFileDir}/analytics-logback/${appName}_events.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
+         <maxHistory>24</maxHistory>
       </rollingPolicy>
    </appender>
 
@@ -112,6 +113,11 @@
           </evaluator>
           <OnMatch>NEUTRAL</OnMatch>
           <OnMismatch>DENY</OnMismatch>
+       </filter>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+          <level>INFO</level>
+          <onMatch>ACCEPT</onMatch>
+          <onMismatch>NEUTRAL</onMismatch>
        </filter>
        <filter class="ch.qos.logback.classic.filter.LevelFilter">
           <level>WARN</level>
