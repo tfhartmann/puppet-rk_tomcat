@@ -1,0 +1,12 @@
+$Modload imfile
+
+$InputFileName <%= @catalina_home %>/logs/catalina.out
+$InputFileTag catalina-<%= @application_tag %>
+$InputFileStateFile catalina-<%= @application_tag %>
+$InputFileSeverity info
+$InputFileFacility user
+$InputRunFileMonitor
+
+# Only entered once in case of following multiple files
+# This will poll the file every 10 seconds
+$InputFilePollInterval 10
