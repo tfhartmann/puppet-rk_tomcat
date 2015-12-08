@@ -56,7 +56,8 @@ yum -y install git
 cd ~
 
 $LOGGER "Cloning Tomcat platform configuration..."
-git clone https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
+GIT_BRANCH=master
+git clone -b $GIT_BRANCH https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
 
 $LOGGER "Copying secrets..."
 # only copy secrets-common to gold master image
