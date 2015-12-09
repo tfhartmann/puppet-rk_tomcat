@@ -55,8 +55,8 @@ yum -y install git
 
 cd ~
 
-$LOGGER "Cloning Tomcat platform configuration..."
 GIT_BRANCH=master
+$LOGGER "Cloning Tomcat platform configuration (${GIT_BRANCH})..."
 git clone -b $GIT_BRANCH https://github.com/FitnessKeeper/puppet-rk_tomcat.git rk_tomcat
 
 $LOGGER "Copying secrets..."
