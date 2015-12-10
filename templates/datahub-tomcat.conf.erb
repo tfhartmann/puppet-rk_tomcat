@@ -1,8 +1,17 @@
 $Modload imfile
 
+# catalina.out
 $InputFileName <%= @catalina_home %>/logs/catalina.out
 $InputFileTag catalina-<%= @application_tag %>:
 $InputFileStateFile catalina-<%= @application_tag %>
+$InputFileSeverity info
+$InputFileFacility user
+$InputRunFileMonitor
+
+# access.log
+$InputFileName <%= @catalina_home %>/logs/access.log
+$InputFileTag access-<%= @application_tag %>:
+$InputFileStateFile access-<%= @application_tag %>
 $InputFileSeverity info
 $InputFileFacility user
 $InputRunFileMonitor
