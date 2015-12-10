@@ -59,7 +59,6 @@ class rk_tomcat::tomcat (
     owner  => 'root',
     group  => 'root',
     mode   => '0755',
-    source => 'puppet:///modules/rk_tomcat/provision.sh',
   } ->
 
   file { 'deploy.sh':

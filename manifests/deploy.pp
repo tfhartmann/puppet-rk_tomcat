@@ -141,6 +141,10 @@ class rk_tomcat::deploy (
 
   class { 'rk_tomcat::newrelic::deploy': }
 
+  class { 'rk_tomcat::rsyslog::deploy':
+    application_tag => $log_identifier
+  }
+
   # make a directory for PostgreSQL client certs on prod deploys only
   case $tier {
     'production': {
