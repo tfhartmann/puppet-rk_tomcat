@@ -118,7 +118,7 @@
              Documentation at: /docs/config/valve.html -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="access" suffix=".log" renameOnRotate="true"
-               pattern="%t h=%h u=%u s=%s b=%b D=%D F=%F I=%I r=&quot;%r&quot;" />
+               pattern="%t h=%h u=%u s=%s B=%B D=%D F=%F I=%I m=%m U=&quot;%U&quot; q=&quot;%q&quot;" />
       </Host>
     </Engine>
   </Service>
