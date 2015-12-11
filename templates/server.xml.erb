@@ -114,10 +114,10 @@
 
       <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
 
-        <!-- Access log processes all example.
-             Documentation at: /docs/config/valve.html -->
+        <Valve className="org.apache.catalina.valves.RemoteIpValve" />
+        
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
-               prefix="access" suffix=".log" renameOnRotate="true"
+               prefix="access" suffix=".log" renameOnRotate="true" requestAttributesEnabled="true"
                pattern="%t h=%h u=%u s=%s B=%B D=%D F=%F I=%I m=%m U=&quot;%U&quot; q=&quot;%q&quot;" />
       </Host>
     </Engine>
