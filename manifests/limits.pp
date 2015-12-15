@@ -8,7 +8,7 @@ class rk_tomcat::limits (
     domain => '*',
     type   => '-',
     item   => 'nofile',
-    value  => $nofile,
+    value  => "$nofile",
     file   => '/etc/security/limits.d/10-rk_tomcat.conf',
   } ->
 
