@@ -1,6 +1,6 @@
 {
   "name": "fitnesskeeper/rk_tomcat",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "fitnesskeeper",
   "summary": "Customize an Amazon Linux instance for Tomcat application hosting",
   "license": "Apache-2.0",
@@ -9,7 +9,9 @@
   "issues_url": "https://github.com/FitnessKeeper/puppet-rk_tomcat/issues",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.0.0"},
-    {"name":"puppetlabs-tomcat","version_requirement":">= 1.3.2"}
+    {"name":"puppetlabs-tomcat","version_requirement":">= 1.3.2"},
+    {"name":"puppetlabs-limits","version_requirement":">= 0.1.0"},
+    {"name":"herculesteam-augeasproviders_sysctl","version_requirement":">= 2.0.2"}
   ]
 }
 

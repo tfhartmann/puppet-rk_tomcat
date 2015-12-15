@@ -84,4 +84,8 @@ class rk_tomcat::tomcat (
 
   # configure rsyslog to log to DataHub
   class { 'rk_tomcat::rsyslog': }
+
+  # configure OS limits
+  class { 'rk_tomcat::limits': }
+
 }
