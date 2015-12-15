@@ -3,8 +3,6 @@
 class rk_tomcat::limits (
   $nofile,
 ) {
-  validate_integer($limits, undef, 1024)
-
   # PAM limits
   ::limits::fragment { 'tomcat-nofile':
     domain => '*',
