@@ -8,11 +8,11 @@ class rk_tomcat::deploy (
   $cloudant_user,
   $cloudant_password,
   $logentries_tokens,
-  $redis_host_1,
-  $redis_host_2,
-  $redis_port,
+  $redis_pushnotif_host,
+  $redis_queue_host,
   $redis_pushnotif_db,
   $redis_queue_db,
+  $redis_port,
   $s3_path,
   $stack,
   $staging_instance,
@@ -74,8 +74,8 @@ class rk_tomcat::deploy (
   $logentries_applogs_token = $logentries_tokens['applogs']
 
   # Redis
-  $redis_pushnotif_uri = "redis://${redis_host_2}:${redis_port}/${redis_pushnotif_db}"
-  $redis_queue_uri = "redis://${redis_host_1}:${redis_port}/${redis_queue_db}"
+  $redis_pushnotif_uri = "redis://${redis_pushnotif_host}:${redis_port}/${redis_pushnotif_db}"
+  $redis_queue_uri = "redis://${redis_queue_host}:${redis_port}/${redis_queue_db}"
 
   # SQS
   $sqs_access_key = $aws_keys['sqs']['access_key']
