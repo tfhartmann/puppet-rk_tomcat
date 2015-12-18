@@ -136,11 +136,6 @@ class rk_tomcat::deploy (
   file { 'tomcat7.conf':
     path    => "${catalina_home}/conf/tomcat7.conf",
     content => template('rk_tomcat/tomcat7.conf.erb'),
-  } ->
-
-  exec { 'deployBuild':
-    command => 'deployBuild.sh',
-    unless  => "ls ${catalina_home}/webapps/*.war >/dev/null 2>&1",
   }
 
   class { 'rk_tomcat::newrelic::deploy': }

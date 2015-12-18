@@ -58,6 +58,12 @@ fi
 $LOGGER "Disabling Puppet agent..."
 $PUPPET resource service puppet ensure=stopped enable=false
 
+# now download the WARs
+APPLICATION_VERSION=___REPLACE_ME_APPVERSION___
+PROMOTED_VERSION=___REPLACE_ME_PROMVERSION___
+$LOGGER "Deploying application build $APPLICATION_VERSION (promoted $PROMOTED_VERSION)..."
+/usr/share/tomcat7/bin/deployBuild.sh $PROMOTED_VERSION
+
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
 

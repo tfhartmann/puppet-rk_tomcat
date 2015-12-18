@@ -52,8 +52,13 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 
 # upload semaphore
-DEPLOY_SCRIPT="${SCRIPTDIR}/deploy.sh"
+DEPLOY_TEMPLATE="${SCRIPTDIR}/deploy.sh"
+DEPLOY_SCRIPT="deploy.sh_${INSTANCE_ID}"
+# FIXME determine these somehow, put them in .env
+sed -i -e "s/___REPLACE_ME_APPVERSION___/${APPLICATION_BUILD_NUMBER}" $DEPLOY_SCRIPT
+sed -i -e "s/___REPLACE_ME_PROMVERSION___/${PROMOTED_BUILD_NUMBER}" $DEPLOY_SCRIPT
 $AWS s3 cp $DEPLOY_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
+rm -f $DEPLOY_SCRIPT
 
 sleep 5
 
