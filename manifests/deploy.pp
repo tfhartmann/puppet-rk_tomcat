@@ -30,6 +30,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'loadtest'
       $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
+      $jenkins_stack    = 'rk-prod-app'
     }
     /^stage/: {
       $cloudant_suffix  = "-${staging_instance}"
@@ -40,6 +41,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'staging'
       $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
+      $jenkins_stack    = 'rk-prod-app'
     }
     '': {
       $cloudant_suffix  = ''
@@ -50,6 +52,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'production'
       $conf_tier        = 'production'
       $platform_env     = 'PRODUCTION'
+      $jenkins_stack    = 'rk-prod-app'
     }
     default: {
       fail("Unable to parse staging_instance parameter '${staging_instance}'.")
