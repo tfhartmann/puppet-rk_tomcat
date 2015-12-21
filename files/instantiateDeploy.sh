@@ -56,8 +56,8 @@ DEPLOY_TEMPLATE="${SCRIPTDIR}/deploy.sh"
 DEPLOY_SCRIPT="deploy.sh_${INSTANCE_ID}"
 echo "Configuring application build ${APPLICATION_VERSION} (promoted build ${PROMOTED_VERSION})"
 cat "$DEPLOY_TEMPLATE" \
-  | sed -e "s/___REPLACE_ME_APPVERSION___/${APPLICATION_VERSION}" \
-  | sed -e "s/___REPLACE_ME_PROMVERSION___/${PROMOTED_VERSION}" \
+  | sed -e "s/___REPLACE_ME_APPVERSION___/${APPLICATION_VERSION}/" \
+  | sed -e "s/___REPLACE_ME_PROMVERSION___/${PROMOTED_VERSION}/" \
   > $DEPLOY_SCRIPT
 $AWS s3 cp $DEPLOY_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
 rm -f $DEPLOY_SCRIPT
