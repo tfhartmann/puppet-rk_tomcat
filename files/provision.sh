@@ -128,6 +128,26 @@ $PUPPET resource service puppet ensure=stopped enable=false
 $LOGGER "Linking Tomcat homedir to CATALINA_HOME..."
 ln -s /usr/share/tomcat7 /home/tomcat
 
+GOSS=$(which goss)
+if [ -n "$GOSS" ]; then
+  $LOGGER "Testing configuration with Goss..."
+  GOSS_OUT=/root/goss.out
+  cd /root
+  echo "### BEGIN GOSS - $(date)" > $GOSS_OUT
+  $GOSS render | $GOSS validate >> $GOSS_OUT
+  echo "### END GOSS - $(date)" >> $GOSS_OUT
+
+  if [ -r "$GOSS_OUT" ]; then
+    cat $GOSS_OUT
+    $LOGGER "Uploading Goss test results to S3..."
+    $AWS s3 cp $GOSS_OUT "s3://rk-devops-${REGION}/jenkins/tests/${INSTANCE_ID}"
+  else
+    $LOGGER "No Goss results found!  Not uploading."
+  fi
+else
+  $LOGGER "Goss not installed, skipping tests."
+fi
+
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
 

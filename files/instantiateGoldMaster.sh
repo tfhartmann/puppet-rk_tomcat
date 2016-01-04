@@ -29,6 +29,10 @@ SG_FILTER=$(echo -n '.SecurityGroups | map({GroupName, GroupId}) | map(select(.G
 BUILD_SECURITY_GROUP_ID=$($AWS ec2 describe-security-groups --filters "Name=vpc-id,Values=${BUILD_VPC_ID}" | jq -r "$SG_FILTER")
 BUILD_SUBNET_ID=$($AWS ec2 describe-subnets --filters "Name=vpc-id,Values=${BUILD_VPC_ID}" "Name=tag:Name,Values=${BUILD_SUBNET}" | jq -r '.Subnets | last | .SubnetId')
 
+if [ -z "$BUILD_USERDATA" ]; then
+  BUILD_USERDATA='file://files/bootstrap.sh'
+fi
+
 # create instance
 INSTANCE_DATA=$($AWS ec2 run-instances \
   --image-id "$AWS_LINUX_AMI" \
@@ -37,7 +41,7 @@ INSTANCE_DATA=$($AWS ec2 run-instances \
   --instance-type "$BUILD_INSTANCE_TYPE" \
   --subnet-id "$BUILD_SUBNET_ID" \
   --iam-instance-profile "Name=${BUILD_PROFILE_NAME}" \
-  --user-data file://files/bootstrap.sh) || exit 1
+  --user-data "$BUILD_USERDATA") || exit 1
 
 INSTANCE_ID=$(echo $INSTANCE_DATA | jq -r '.Instances[].InstanceId')
 
@@ -47,7 +51,7 @@ PROVISION_SCRIPT="${SCRIPTDIR}/provision.sh"
 # get specified git branch from env
 if [ "$GIT_BRANCH" ]; then
   BRANCH_NO_REMOTE=$(echo $GIT_BRANCH | cut -d '/' -f 2)
-  sed -i -e "s/GIT_BRANCH=master/GIT_BRANCH=${BRANCH_NO_REMOTE}/" $PROVISION_SCRIPT
+  sed -i.orig -e "s/GIT_BRANCH=master/GIT_BRANCH=${BRANCH_NO_REMOTE}/" $PROVISION_SCRIPT
 fi
 
 $AWS s3 cp $PROVISION_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"

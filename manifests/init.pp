@@ -59,4 +59,6 @@ class rk_tomcat (
     }
   }
 
+  # common dependencies
+  class { '::wget': }
 }
