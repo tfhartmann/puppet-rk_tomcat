@@ -1,0 +1,111 @@
+{
+    "file": {
+        "/etc/rsyslog.d/50-datahub-default.conf": {
+            "exists": true,
+            "mode": "0644",
+            "owner": "root",
+            "group": "root",
+            "filetype": "file",
+            "contains": []
+        },
+        "/etc/security/limits.d/10-rk_tomcat.conf": {
+            "exists": true,
+            "mode": "0644",
+            "owner": "root",
+            "group": "root",
+            "filetype": "file",
+            "contains": []
+        },
+        "/etc/sysctl.d/10-rk_tomcat.conf": {
+            "exists": true,
+            "mode": "0644",
+            "owner": "root",
+            "group": "root",
+            "filetype": "file",
+            "contains": []
+        },
+        "/root/deploy.sh": {
+            "exists": true,
+            "mode": "0755",
+            "owner": "root",
+            "group": "root",
+            "filetype": "file",
+            "contains": []
+        },
+        "<%= @catalina_home %>/lib/<%= @postgres_driver %>.jar": {
+            "exists": true,
+            "mode": "0644",
+            "owner": "root",
+            "group": "root",
+            "filetype": "file",
+            "contains": []
+        },
+        "<%= @catalina_home %>/newrelic": {
+            "exists": true,
+            "mode": "0750",
+            "owner": "<%= @tomcat_user %>",
+            "group": "<%= @tomcat_group %>",
+            "filetype": "directory",
+            "contains": []
+        },
+        "<%= @catalina_home %>/newrelic/logs": {
+            "exists": true,
+            "mode": "0750",
+            "owner": "<%= @tomcat_user %>",
+            "group": "<%= @tomcat_group %>",
+            "filetype": "directory",
+            "contains": []
+        },
+        "<%= @catalina_home %>/newrelic/newrelic.jar": {
+            "exists": true,
+            "mode": "0750",
+            "owner": "<%= @tomcat_user %>",
+            "group": "<%= @tomcat_group %>",
+            "filetype": "file",
+            "contains": []
+        }
+    },
+    "package": {
+       "<%= @tomcat_native_pkg %>": {
+            "installed": true,
+            "versions": [
+                "1.1.33"
+            ]
+        },
+        "<%= @tomcat_pkg %>": {
+            "installed": true,
+            "versions": [
+                "7.0.65"
+            ]
+        },
+        "<%= @zulu_package %>": {
+            "installed": true,
+            "versions": [
+               "<%= @zulu_version %>"
+            ]
+        }
+    },
+    "service": {
+       "<%= @tomcat_svc %>": {
+            "enabled": true,
+            "running": false
+        }
+    },
+    "user": {
+       "<%= @tomcat_user %>": {
+            "exists": true,
+            "uid": "501",
+            "gid": "501",
+            "groups": [
+               "<%= @tomcat_group %>"
+            ],
+            "home": "/home/<%= @tomcat_user %>"
+        }
+    },
+    "group": {
+       "<%= @tomcat_group %>": {
+            "exists": true,
+            "gid": "501"
+        }
+    }
+}
