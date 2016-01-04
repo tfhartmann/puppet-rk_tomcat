@@ -88,4 +88,7 @@ class rk_tomcat::tomcat (
   # configure OS limits
   class { 'rk_tomcat::limits': }
 
+  # install Goss
+  class { 'rk_tomcat::goss': }
+
 }

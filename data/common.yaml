@@ -22,3 +22,6 @@ rk_tomcat::tomcat::tomcat_group: tomcat
 rk_tomcat::newrelic::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
 rk_tomcat::newrelic::tomcat_user: "%{alias('rk_tomcat::tomcat::tomcat_user')}"
 rk_tomcat::newrelic::tomcat_group: "%{alias('rk_tomcat::tomcat::tomcat_group')}"
+
+# Goss
+rk_tomcat::goss::version: v0.0.16
