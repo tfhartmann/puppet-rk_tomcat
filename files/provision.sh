@@ -130,6 +130,7 @@ ln -s /usr/share/tomcat7 /home/tomcat
 
 $LOGGER "Testing configuration with Goss..."
 GOSS_OUT=/root/goss.out
+cd /root
 goss render && goss validate > $GOSS_OUT
 
 if [ -r "$GOSS_OUT" ]; then
