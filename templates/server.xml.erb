@@ -87,9 +87,9 @@
          Define a non-SSL HTTP/1.1 Connector on port 8080
     -->
     <Connector port="8080" protocol="HTTP/1.1"
-               connectionTimeout="60000"
+               connectionTimeout="120000"
                disableUploadTimeout="false"
-               connectionUploadTimeout="120000"
+               connectionUploadTimeout="240000"
                enableLookups="false"
                redirectPort="8443"
                URIEncoding="UTF-8"/>
