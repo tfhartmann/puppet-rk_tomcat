@@ -24,4 +24,5 @@ rk_tomcat::newrelic::tomcat_user: "%{alias('rk_tomcat::tomcat::tomcat_user')}"
 rk_tomcat::newrelic::tomcat_group: "%{alias('rk_tomcat::tomcat::tomcat_group')}"
 
 # Goss
+rk_tomcat::goss::destination: /usr/local/bin/goss
 rk_tomcat::goss::version: v0.0.16

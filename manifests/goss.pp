@@ -2,11 +2,17 @@
 #
 class rk_tomcat::goss (
   $version,
+  $destination,
 ) {
   wget::fetch { "download_goss":
     source      => "https://github.com/aelsabbahy/goss/releases/download/${version}/goss-linux-amd64",
-    destination => '/usr/local/bin/goss',
-    mode        => '0755',
-    backup      => false,
+    destination => $destination,
+  } ->
+
+  file { $destination:
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    backup => false,
   }
 }
