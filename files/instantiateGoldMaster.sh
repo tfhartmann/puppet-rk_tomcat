@@ -51,7 +51,7 @@ PROVISION_SCRIPT="${SCRIPTDIR}/provision.sh"
 # get specified git branch from env
 if [ "$GIT_BRANCH" ]; then
   BRANCH_NO_REMOTE=$(echo $GIT_BRANCH | cut -d '/' -f 2)
-  sed -i '' -e "s/GIT_BRANCH=master/GIT_BRANCH=${BRANCH_NO_REMOTE}/" $PROVISION_SCRIPT
+  sed -i -e "s/GIT_BRANCH=master/GIT_BRANCH=${BRANCH_NO_REMOTE}/" $PROVISION_SCRIPT
 fi
 
 $AWS s3 cp $PROVISION_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
