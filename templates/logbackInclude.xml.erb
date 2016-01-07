@@ -33,8 +33,14 @@
       com.fasterxml.jackson
    "/>
 
-   <property name="filePattern"       value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
-   <property name="logentriesPattern" value="%cn {%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
+   <property name="logPattern" value="{%thread} [%level] %logger{0} - %m {mdc.uuid=%X{mdc.uuid:-null}, user.legacy_id=%X{user.legacy_id:-null}}%n%rEx{full,${ignoredStackTrace}}" />
+   <property name="filePattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %cn ${logPattern}" />
+   
+<%- if @tier == "staging" -%>
+   <property name="logentriesPattern" value="%cn <%= @staging_instance %> ${logPattern}" />
+<%- else -%>
+   <property name="logentriesPattern" value="%cn ${logPattern}" />
+<%- end -%>
 
    <!--********************************************************************************************-->
    <!-- Define our appenders                                                                       -->
