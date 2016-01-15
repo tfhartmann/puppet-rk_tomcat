@@ -117,7 +117,7 @@ $PUPPET apply \
 
 if [ -r "${PUPPET_LOGDIR}/provision.log" ]; then
   $LOGGER "Uploading provisioning log to S3..."
-  $AWS s3 cp "${PUPPET_LOGDIR}/provision.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_NAME}/provision.log"
+  $AWS s3 cp "${PUPPET_LOGDIR}/provision.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_ID}/provision.log"
 else
   $LOGGER "No provisioning log found."
 fi

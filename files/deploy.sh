@@ -50,7 +50,7 @@ $PUPPET apply \
 
 if [ -r "${PUPPET_LOGDIR}/deploy.log" ]; then
   $LOGGER "Uploading deploy log to S3..."
-  $AWS s3 cp "${PUPPET_LOGDIR}/deploy.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_NAME}/deploy.log"
+  $AWS s3 cp "${PUPPET_LOGDIR}/deploy.log" "s3://rk-devops-${REGION}/jenkins/logs/${INSTANCE_ID}/deploy.log"
 else
   $LOGGER "No deploy log found."
 fi
