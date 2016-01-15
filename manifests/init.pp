@@ -46,6 +46,10 @@ class rk_tomcat (
   validate_re($mode, '^(provision|deploy)$')
 
   if ( $mode == 'provision' ) {
+    class { 'rk_tomcat::ethtool':
+      before => Class[rk_tomcat::tomcat],
+    }
+
     class { 'rk_tomcat::java':
       before => Class[rk_tomcat::tomcat],
     }
