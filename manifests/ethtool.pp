@@ -1,16 +1,19 @@
 # rk_tomcat::ethtool
 #
 class rk_tomcat::ethtool (
-  $lro,
+  $gso,
+  $tso,
 ) {
-  validate_bool($lro)
+  validate_bool($gso)
+  validate_bool($tso)
 
   class { 'ethtool': }
 
   $::interfaces.each |$interface| {
     if ( $interface =~ /^eth\d+/ ) {
       ethtool { $interface:
-        lro => $lro,
+        gso => $gso,
+        tso => $tso,
       }
     }
   }

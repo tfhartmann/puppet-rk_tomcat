@@ -9,7 +9,8 @@ rk_tomcat::tomcat::postgres_tls: false
 rk_tomcat::tomcat::catalina_home: /usr/share/tomcat7
 rk_tomcat::deploy::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
 rk_tomcat::deploy::tomcat_svc: "%{alias('rk_tomcat::tomcat::tomcat_svc')}"
-rk_tomcat::ethtool::lro: false
+rk_tomcat::ethtool::gso: false
+rk_tomcat::ethtool::tso: false
 rk_tomcat::limits::nofile: 65536
 rk_tomcat::rsyslog::deploy::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
 rk_tomcat::tomcat::tomcat_instance: default
