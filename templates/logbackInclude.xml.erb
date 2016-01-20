@@ -81,6 +81,12 @@
            <level>ERROR</level>
        </filter>
    </appender>
+   
+   <appender name="ERRORS_ANALYTICS" class="fitnesskeeper.core.logging.ErrorAnalyticsLogAppender">
+       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+           <level>ERROR</level>
+       </filter>
+   </appender>
 
    <appender name="ANALYTICS_FILE" class="com.logpig.mweagle.rolling.S3RollingFileAppender">
       <file>${logFileDir}/analytics-logback/${appName}_events.log</file>
