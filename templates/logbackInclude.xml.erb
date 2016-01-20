@@ -161,6 +161,7 @@
 
 <%- if @tier != "loadtest" -%>
       <appender-ref ref="APPLOGS_LOGENTRIES" />
+      <appender-ref ref="ERRORS_ANALYTICS" />
 <%- end -%>
 
 <%- if @tier == "production" -%>
