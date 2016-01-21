@@ -17,7 +17,8 @@ rk_tomcat::tomcat::tomcat_native_pkg: tomcat-native
 rk_tomcat::tomcat::tomcat_svc: tomcat7
 rk_tomcat::tomcat::tomcat_user: tomcat
 rk_tomcat::tomcat::tomcat_group: tomcat
-rk_tomcat::tomcat::tomcat_jars_context_skip: []
+rk_tomcat::tomcat::tomcat_jars_context_skip:
+  - 
 
 # New Relic
 rk_tomcat::newrelic::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
