@@ -1,0 +1,7 @@
+<%- require 'json' -%>
+{
+   "cloudwatch.emitMetrics": true,
+   "firehose.endpoint": "",
+   "flows": <%= JSON.pretty_generate(@flows) %>
+}
+
