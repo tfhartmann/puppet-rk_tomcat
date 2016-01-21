@@ -40,6 +40,14 @@
             "filetype": "file",
             "contains": []
         },
+        "<%= @catalina_home %>/conf/catalina.properties": {
+            "exists": true,
+            "mode": "0664",
+            "owner": "<%= @tomcat_user %>",
+            "group": "<%= @tomcat_group %>",
+            "filetype": "file",
+            "contains": []
+        },
         "<%= @catalina_home %>/newrelic": {
             "exists": true,
             "mode": "0750",

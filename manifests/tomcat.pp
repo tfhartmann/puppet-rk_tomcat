@@ -59,9 +59,7 @@ class rk_tomcat::tomcat (
 
   file { 'catalina.properties':
     path    => "${catalina_home}/conf/catalina.properties",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
+    mode    => '0664',
     content => template('rk_tomcat/catalina.properties.erb'),
   } ->
 
