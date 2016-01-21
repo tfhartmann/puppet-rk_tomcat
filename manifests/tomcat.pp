@@ -10,7 +10,10 @@ class rk_tomcat::tomcat (
   $tomcat_svc,
   $tomcat_user,
   $tomcat_group,
+  $tomcat_jars_context_skip,
 ) {
+
+  validate_array($tomcat_jars_context_skip)
 
   # Postgres
   $postgres_driver_jarfile = "${postgres_driver}.jar"
@@ -52,6 +55,14 @@ class rk_tomcat::tomcat (
     group  => 'root',
     mode   => '0644',
     source => "puppet:///modules/rk_tomcat/${postgres_driver_jarfile}",
+  } ->
+
+  file { 'catalina.properties':
+    path    => "${catalina_home}/conf/catalina.properties",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('rk_tomcat/catalina.properties.erb'),
   } ->
 
   file { 'provision.sh':
