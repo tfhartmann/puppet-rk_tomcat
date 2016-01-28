@@ -10,7 +10,7 @@ overrides = {
     fitnesskeeper.notification = {
         CloudantPushNotificationStore = {
             readURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-push_notification<%= @cloudant_suffix -%>"
-            writeURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-push_notification2<%= @cloudant_suffix -%>"
+            writeURI = "https://<%= @cloudant_user -%>:<%= @cloudant_password -%>@<%= @cloudant_host -%>/rk-push_notification<%= @cloudant_suffix -%>"
             documentType = "fitnesskeeper.core.entity.PushNotificationEntity"
         }
         CloudantPushNotificationTokenStore = {
