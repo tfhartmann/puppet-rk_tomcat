@@ -6,9 +6,8 @@ class rk_tomcat::kinesis (
   $agent_svc,
   $ensure = 'present',
 ) {
-  validate_array($flows)
-
   $flows = hiera_array('rk_tomcat::kinesis::flows')
+  validate_array($flows)
 
   package { $agent_pkg:
     ensure => $ensure,
