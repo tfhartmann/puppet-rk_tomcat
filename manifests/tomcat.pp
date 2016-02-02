@@ -2,6 +2,7 @@
 #
 class rk_tomcat::tomcat (
   $catalina_home,
+  $logdir,
   $postgres_driver,
   $postgres_tls,
   $tomcat_instance,
