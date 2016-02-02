@@ -78,6 +78,12 @@ class rk_tomcat::tomcat (
     source => 'puppet:///modules/rk_tomcat/deploy.sh',
   } ->
 
+  file { $logdir:
+    ensure => 'directory',
+    group  => 'root',
+    mode   => '0751',
+  } ->
+
   # apr for performance
   package { $tomcat_native_pkg:
     ensure => present,

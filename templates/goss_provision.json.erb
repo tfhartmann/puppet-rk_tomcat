@@ -71,6 +71,14 @@
             "group": "<%= @tomcat_group %>",
             "filetype": "file",
             "contains": []
+        },
+        "<%= @tomcat_logdir %>": {
+            "exists": true,
+            "mode": "0751",
+            "owner": "<%= @tomcat_user %>",
+            "group": "root",
+            "filetype": "directory",
+            "contains": []
         }
     },
     "package": {

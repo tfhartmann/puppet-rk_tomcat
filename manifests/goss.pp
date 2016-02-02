@@ -10,6 +10,7 @@ class rk_tomcat::goss (
   $tomcat_svc,
   $tomcat_user,
   $tomcat_group,
+  $tomcat_logdir,
   $zulu_package,
   $zulu_version,
 ) {
