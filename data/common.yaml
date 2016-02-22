@@ -10,6 +10,7 @@ rk_tomcat::tomcat::postgres_tls: false
 rk_tomcat::tomcat::catalina_home: /usr/share/tomcat7
 rk_tomcat::deploy::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
 rk_tomcat::deploy::tomcat_svc: "%{alias('rk_tomcat::tomcat::tomcat_svc')}"
+rk_tomcat::deploy::newrelic_enabled: false
 rk_tomcat::kinesis::agent_cfg: /etc/aws-kinesis/agent.json
 rk_tomcat::kinesis::agent_pkg: aws-kinesis-agent
 rk_tomcat::kinesis::agent_svc: aws-kinesis-agent
@@ -30,6 +31,9 @@ rk_tomcat::tomcat::tomcat_jars_context_skip:
 rk_tomcat::newrelic::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
 rk_tomcat::newrelic::tomcat_user: "%{alias('rk_tomcat::tomcat::tomcat_user')}"
 rk_tomcat::newrelic::tomcat_group: "%{alias('rk_tomcat::tomcat::tomcat_group')}"
+rk_tomcat::newrelic::deploy::newrelic_enabled: "%{alias('rk_tomcat::deploy::newrelic_enabled')}"
+rk_tomcat::newrelic::deploy::staging_instance: "%{alias('rk_tomcat::deploy::staging_instance')}"
+rk_tomcat::newrelic::deploy::artifacts: "%{alias('rk_tomcat::deploy::artifacts')}"
 
 # Goss
 rk_tomcat::goss::destination: /usr/local/bin/goss

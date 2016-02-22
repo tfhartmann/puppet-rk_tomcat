@@ -8,6 +8,7 @@ class rk_tomcat::deploy (
   $cloudant_user,
   $cloudant_password,
   $logentries_tokens,
+  $newrelic_enabled,
   $redis_pushnotif_host,
   $redis_queue_host,
   $redis_pushnotif_db,

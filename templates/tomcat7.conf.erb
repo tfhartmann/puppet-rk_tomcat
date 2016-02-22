@@ -16,7 +16,12 @@ HEAP_SIZE=$(printf "%0.f" ${HEAP_SIZE})
 HEAP_OPTS="-Xms${HEAP_SIZE}k -Xmx${HEAP_SIZE}k"
 JVM_OPTS="-server -Djava.awt.headless=true -XX:-OmitStackTraceInFastThrow -Duser.timezone='GMT' -Dlogback.ContextSelector=JNDI"
 RK_PLATFORM_OPTS="-DFITNESSKEEPER_PLATFORM_ENVIRONMENT=<%= @platform_env -%> -DFITNESSKEEPER_PLATFORM_CONFIG_PATH=${CATALINA_HOME}/conf"
+
+<%- if @newrelic_enabled -%>
 NEWRELIC_OPTS="-javaagent:${CATALINA_HOME}/newrelic/newrelic.jar -Dnewrelic.environment=<%= @newrelic_env -%>"
+<%- else -%>
+NEWRELIC_OPTS=""
+<%- end -%>
 
 JAVA_OPTS="${HEAP_OPTS} ${JVM_OPTS} ${RK_PLATFORM_OPTS} ${NEWRELIC_OPTS}"
 
