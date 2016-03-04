@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # Copy the local secrets.yaml file to S3.
-
 REGION='us-east-1'
 
 SCRIPTNAME=$(basename "$0")
@@ -12,25 +11,41 @@ else
   TAG=""
 fi
 
-FILENAME="secrets${TAG}.yaml"
-
-LOCAL="data/${FILENAME}"
-REMOTE="s3://rk-devops-${REGION}/secrets/${FILENAME}"
-
 if [ "$SCRIPTNAME" = 'storeSecrets.sh' ]; then
-  SOURCE="$LOCAL"
-  TARGET="$REMOTE"
   ACTION='store'
+  OBJECT='secrets'
 elif [ "$SCRIPTNAME" = 'getSecrets.sh' ]; then
-  SOURCE="$REMOTE"
-  TARGET="$LOCAL"
+  ACTION='get'
+  OBJECT='secrets'
+elif [ "$SCRIPTNAME" = 'storeFixtures.sh' ]; then
+  ACTION='store'
+  OBJECT='fixtures'
+elif [ "$SCRIPTNAME" = 'getFixtures.sh' ]; then
+  ACTION='get'
+  OBJECT='fixtures'
 else
   echo "'$SCRIPTNAME' is not an invocation I understand."
   exit 1
 fi
 
+FILENAME="${OBJECT}${TAG}.yaml"
+
+LOCAL="data/${FILENAME}"
+REMOTE="s3://rk-devops-${REGION}/${OBJECT}/${FILENAME}"
+
 if [[ ("$ACTION" = "store") && (! -r "$LOCAL") ]]; then
   echo "Unable to read '$LOCAL', exiting."
+  exit 1
+fi
+
+if [ "$ACTION" = "store" ]; then
+  SOURCE="$LOCAL"
+  TARGET="$REMOTE"
+elif [ "$ACTION" = "get" ]; then
+  SOURCE="$REMOTE"
+  TARGET="$LOCAL"
+else
+  echo "'$ACTION' is not an action I understand."
   exit 1
 fi
 
