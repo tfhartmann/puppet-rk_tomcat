@@ -28,7 +28,16 @@ else
   exit 1
 fi
 
-FILENAME="${OBJECT}${TAG}.yaml"
+if [ "$OBJECT" = "secrets" ]; then
+  SUFFIX='yaml'
+elif [ "$OBJECT" = "fixtures" ]; then
+  SUFFIX='sql'
+else
+  echo "'$OBJECT' is not an object I understand."
+  exit 1
+fi
+
+FILENAME="${OBJECT}${TAG}.${SUFFIX}"
 
 LOCAL="data/${FILENAME}"
 REMOTE="s3://rk-devops-${REGION}/${OBJECT}/${FILENAME}"
