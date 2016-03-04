@@ -6,3 +6,4 @@ modules/
 artifacts/
 data/secrets.yaml
 data/secrets*.yaml
+data/*.sql
