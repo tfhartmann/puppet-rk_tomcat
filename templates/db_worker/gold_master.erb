@@ -1,0 +1,68 @@
+#!/bin/bash -l
+#
+
+# FIXME all of this needs to be replaced by leeroy tasks
+
+# set up logging
+LOGGER='logger -t [CLOUDINIT] -p daemon.info'
+
+if [[ "${USER}" -ne 0 ]]; then
+  $LOGGER "$0 must be run as root."
+  exit 1
+fi
+
+# can't do much without jq
+yum -y -q install jq || exit 1
+
+if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
+  . /etc/profile.d/aws-apitools-common.sh
+fi
+
+INSTANCE_ID=$(ec2-metadata -i | awk '{print $2}')
+
+# determine AWS region
+AZ=$(ec2-metadata -z | awk '{print $2}')
+REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
+
+AWS="aws --region $REGION"
+
+VPC_ID=$($AWS ec2 describe-instances --instance-ids ${INSTANCE_ID} | jq -r '.Reservations[].Instances[].VpcId')
+VPC=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${VPC_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+INSTANCE_NAME=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+
+# log to DataHub
+RSYSLOG_D='/etc/rsyslog.d'
+if [ -d "$RSYSLOG_D" ]; then
+  cat > "${RSYSLOG_D}/50-datahub-default.conf" <<RSYSLOG
+# log to DataHub
+#
+*.info;mail.none;authpriv.none;cron.none                @@datahub.${VPC}.vpc.rkcloud.us:10000
+RSYSLOG
+
+  service rsyslog restart
+
+  LOGGER="logger -t ${INSTANCE_NAME} -p daemon.info"
+fi
+
+$LOGGER "Provisioning..."
+
+$LOGGER "Patching system..."
+yum -y update
+
+$LOGGER "Installing PostgreSQL client..."
+yum -y install postgresql94
+
+$LOGGER "Writing .pgpass..."
+PGPASS_FILE=/home/ec2-user/.pgpass
+
+cat > $PGPASS_FILE <<PGPASS
+<%= checkEnv('LEEROY_DB_HOST') %>:*:*:<%= checkEnv('LEEROY_DB_USER') %>:<%= checkEnv('LEEROY_DB_PASSWORD') %>
+PGPASS
+chmod 0600 ${PGPASS_FILE}
+
+$LOGGER "Removing semaphore..."
+$AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
+
+cd ..
+
+$LOGGER "Provision complete."

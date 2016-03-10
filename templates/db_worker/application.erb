@@ -1,0 +1,64 @@
+#!/bin/bash -l
+#
+
+# FIXME all of this needs to be replaced by leeroy tasks
+
+# set up logging
+LOGGER='logger -t [CLOUDINIT] -p daemon.info'
+
+if [[ "${USER}" -ne 0 ]]; then
+  $LOGGER "$0 must be run as root."
+  exit 1
+fi
+
+# can't do much without jq
+which jq >/dev/null || exit 1
+
+if [ -r "/etc/profile.d/aws-apitools-common.sh" ]; then
+  . /etc/profile.d/aws-apitools-common.sh
+fi
+
+INSTANCE_ID=$(ec2-metadata -i | awk '{print $2}')
+
+# determine AWS region
+AZ=$(ec2-metadata -z | awk '{print $2}')
+REGION=$(echo "$AZ" | sed 's/[[:alpha:]]$//')
+
+AWS="aws --region $REGION"
+
+INSTANCE_NAME=$($AWS ec2 describe-tags --filters "Name=resource-id,Values=${INSTANCE_ID}" | jq -r '.Tags | map(select(.Key == "Name"))[] | .Value')
+
+# log to DataHub
+LOGGER="logger -t ${INSTANCE_NAME} -p daemon.info"
+
+$LOGGER "Running SQL fixture..."
+
+PSQL=$(which psql)
+
+if [ ! -x "$PSQL" ]; then
+  $LOGGER 'Unable to find psql executable, exiting!'
+  exit 1
+fi
+
+DB_USER=<%= checkEnv('LEEROY_DB_USER') %>
+DB_NAME=<%= checkEnv('LEEROY_DB_NAME') %>
+DB_HOST=<%= getRDSInstanceEndpoint(checkEnv('LEEROY_DB_HOST')) %>
+
+DB_FILE=fixture.sql
+DB_LOG="${DB_NAME}.log"
+
+# read SQL file from S3
+$AWS s3 cp "s3://rk-devops-${REGION}/jenkins/fixtures/sql/${DB_NAME}.sql" $DB_FILE
+
+# run SQL file against database
+$PSQL -h $DB_HOST -U $DB_USER -d $DB_NAME -f $DB_FILE > $DB_LOG
+
+# copy log to S3
+$AWS s3 cp $DB_LOG "s3://rk-devops-${REGION}/jenkins/logs/${DB_LOG}" $DB_LOG
+
+$LOGGER "Removing semaphore..."
+$AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
+
+cd ..
+
+$LOGGER "SQL fixture complete."
