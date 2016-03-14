@@ -53,7 +53,7 @@ $LOGGER "Installing PostgreSQL client..."
 yum -y install postgresql94
 
 $LOGGER "Writing .pgpass..."
-PGPASS_FILE=/home/ec2-user/.pgpass
+PGPASS_FILE=/root/.pgpass
 
 cat > $PGPASS_FILE <<PGPASS
 <%= checkEnv('LEEROY_DB_HOST') %>:*:*:<%= checkEnv('LEEROY_DB_USER') %>:<%= checkEnv('LEEROY_DB_PASSWORD') %>

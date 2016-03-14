@@ -43,6 +43,7 @@ fi
 DB_USER=<%= checkEnv('LEEROY_DB_USER') %>
 DB_NAME=<%= checkEnv('LEEROY_DB_NAME') %>
 DB_HOST=<%= getRDSInstanceEndpoint(checkEnv('LEEROY_DB_HOST')) %>
+DB_PASSWORD=<%= checkEnv('LEEROY_DB_PASSWORD') %>
 
 DB_FILE=fixture.sql
 DB_LOG="${DB_NAME}.log"
@@ -51,10 +52,10 @@ DB_LOG="${DB_NAME}.log"
 $AWS s3 cp "s3://rk-devops-${REGION}/jenkins/fixtures/sql/${DB_NAME}.sql" $DB_FILE
 
 # run SQL file against database
-$PSQL -h $DB_HOST -U $DB_USER -d $DB_NAME -f $DB_FILE > $DB_LOG
+PGPASSWORD="$DB_PASSWORD" $PSQL -h $DB_HOST -U $DB_USER -d $DB_NAME -f $DB_FILE > $DB_LOG
 
 # copy log to S3
-$AWS s3 cp $DB_LOG "s3://rk-devops-${REGION}/jenkins/logs/${DB_LOG}" $DB_LOG
+$AWS s3 cp $DB_LOG "s3://rk-devops-${REGION}/jenkins/logs/${DB_LOG}"
 
 $LOGGER "Removing semaphore..."
 $AWS s3 rm "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}" 2>/dev/null || true
