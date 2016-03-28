@@ -46,6 +46,8 @@ class rk_tomcat (
   validate_re($mode, '^(provision|deploy)$')
 
   if ( $mode == 'provision' ) {
+    class { 'rk_tomcat::fonts': }
+
     class { 'rk_tomcat::java':
       before => Class[rk_tomcat::tomcat],
     }
