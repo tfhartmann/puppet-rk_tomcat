@@ -56,3 +56,4 @@ rk_tomcat::fonts::packages:
   - cjkuni-fonts-ghostscript
   - cjkuni-ukai-fonts
   - cjkuni-uming-fonts
+  - org-x11-fonts-misc
