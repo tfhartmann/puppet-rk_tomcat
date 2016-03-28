@@ -39,6 +39,7 @@ rk_tomcat::newrelic::deploy::artifacts: "%{alias('rk_tomcat::deploy::artifacts')
 rk_tomcat::goss::destination: /usr/local/bin/goss
 rk_tomcat::goss::version: v0.0.16
 rk_tomcat::goss::catalina_home: "%{alias('rk_tomcat::tomcat::catalina_home')}"
+rk_tomcat::goss::font_pkgs: "%{alias('rk_tomcat::fonts::packages')}"
 rk_tomcat::goss::postgres_driver: "%{alias('rk_tomcat::tomcat::postgres_driver')}"
 rk_tomcat::goss::tomcat_native_pkg: "%{alias('rk_tomcat::tomcat::tomcat_native_pkg')}"
 rk_tomcat::goss::tomcat_pkg: "%{alias('rk_tomcat::tomcat::tomcat_pkg')}"

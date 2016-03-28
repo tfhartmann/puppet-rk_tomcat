@@ -94,6 +94,11 @@
                 "7.0.67"
             ]
         },
+        <%- @font_pkgs.each do |font_pkg| -%>
+        "<%= font_pkg %>": {
+            "installed": true
+        },
+        <%- end -%>
         "<%= @zulu_package %>": {
             "installed": true,
             "versions": [

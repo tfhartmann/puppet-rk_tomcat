@@ -4,6 +4,7 @@ class rk_tomcat::goss (
   $version,
   $destination,
   $catalina_home,
+  $font_pkgs,
   $postgres_driver,
   $tomcat_pkg,
   $tomcat_native_pkg,
