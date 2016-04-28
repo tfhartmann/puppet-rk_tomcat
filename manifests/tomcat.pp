@@ -1,6 +1,7 @@
 # rk_tomcat::tomcat
 #
 class rk_tomcat::tomcat (
+  $hosts,
   $catalina_home,
   $logdir,
   $postgres_driver,
@@ -13,8 +14,11 @@ class rk_tomcat::tomcat (
   $tomcat_group,
   $tomcat_jars_context_skip,
 ) {
-
   validate_array($tomcat_jars_context_skip)
+
+  # Host file management
+  validate_hash($hosts)
+  create_resources('host', $hosts)
 
   # Postgres
   $postgres_driver_jarfile = "${postgres_driver}.jar"
