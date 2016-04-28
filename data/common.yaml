@@ -7,6 +7,8 @@ rk_tomcat::java::zulu_version: 1.8.0_66-8.11.0.1
 rk_tomcat::tomcat::hosts:
     fitnesskeeper.cloudant.com:
       ip: 75.126.67.58
+      host_aliases:
+        - fitnesskeeper-staging.cloudant.com
 rk_tomcat::tomcat::logdir: /var/log/tomcat7
 rk_tomcat::tomcat::postgres_driver: postgresql-9.4-1203.jdbc42
 rk_tomcat::tomcat::postgres_tls: false
