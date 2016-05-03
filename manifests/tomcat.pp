@@ -44,8 +44,15 @@ class rk_tomcat::tomcat (
   }
 
   # install Tomcat package
+  $install_from_source = false
+
   class { '::tomcat':
-    install_from_source => false,
+    install_from_source => $install_from_source,
+  } ->
+
+  ::tomcat::install { $catalina_home:
+    install_from_source => $install_from_source,
+    package_name        => $tomcat_pkg,
   } ->
 
   ::tomcat::instance { $tomcat_instance:
