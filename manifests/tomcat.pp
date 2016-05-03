@@ -49,7 +49,9 @@ class rk_tomcat::tomcat (
   } ->
 
   ::tomcat::instance { $tomcat_instance:
-    package_name => $tomcat_pkg,
+    package_name   => $tomcat_pkg,
+    manage_service => false,
+    use_init       => true,
   } ->
 
   class { 'rk_tomcat::newrelic::provision': } ->
