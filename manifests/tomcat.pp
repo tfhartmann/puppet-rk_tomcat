@@ -45,6 +45,8 @@ class rk_tomcat::tomcat (
 
   # install Tomcat package
   $install_from_source = false
+  $manage_user = false
+  $manage_group = false
 
   class { '::tomcat':
     install_from_source => $install_from_source,
@@ -53,11 +55,15 @@ class rk_tomcat::tomcat (
   ::tomcat::install { $catalina_home:
     install_from_source => $install_from_source,
     package_name        => $tomcat_pkg,
+    manage_user         => $manage_user,
+    manage_group        => $manage_group,
   } ->
 
   ::tomcat::instance { $tomcat_instance:
     package_name   => $tomcat_pkg,
     manage_service => false,
+    manage_user    => $manage_user,
+    manage_group   => $manage_group,
     use_init       => true,
   } ->
 
