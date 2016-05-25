@@ -31,6 +31,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'loadtest'
       $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
+      $build_job_name   = 'STAGING - Build'
       $jenkins_stack    = 'rk-prod-app'
     }
     /^stage/: {
@@ -42,6 +43,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'staging'
       $conf_tier        = 'stage'
       $platform_env     = 'STAGE'
+      $build_job_name   = 'STAGING - Build'
       $jenkins_stack    = 'rk-prod-app'
     }
     '': {
@@ -53,6 +55,7 @@ class rk_tomcat::deploy (
       $newrelic_env     = 'production'
       $conf_tier        = 'production'
       $platform_env     = 'PRODUCTION'
+      $build_job_name   = "PRODUCTION - Build"
       $jenkins_stack    = 'rk-prod-app'
     }
     default: {
