@@ -32,7 +32,7 @@ service <%= @tomcat_svc %> stop
 
 <%- @artifacts.each do |artifact, war| -%>
 echo "### Deploying artifact '<%= war %>' for '<%= artifact %>'..."
-SOURCE="${S3_URI_PREFIX}/${BUILD_NUMBER}/<%= war %>"
+SOURCE="${S3_URI_PREFIX}/${BUILD_NUMBER}/<%= artifact %>/target/<%= war %>"
 <%- if ( @tier == 'production' ) -%>
 TARGET="<%= @catalina_home %>/webapps/<%= @warname %>"
 <%- else -%>
