@@ -59,6 +59,13 @@ cat "$DEPLOY_TEMPLATE" \
   | sed -e "s/___REPLACE_ME_APPVERSION___/${APPLICATION_VERSION}/" \
   | sed -e "s/___REPLACE_ME_PROMVERSION___/${PROMOTED_VERSION}/" \
   > $DEPLOY_SCRIPT
+# safety check
+FAILED_REPLACEMENTS=$(grep -c '___REPLACE_ME' $DEPLOY_SCRIPT)
+if [ "$FAILED_REPLACEMENTS" -gt 0 ]; then
+  echo "Failed replacements in deploy script!"
+  echo $(grep '___REPLACE_ME' $DEPLOY_SCRIPT)
+  exit 1
+fi
 $AWS s3 cp $DEPLOY_SCRIPT "s3://rk-devops-${REGION}/jenkins/semaphores/${INSTANCE_ID}"
 rm -f $DEPLOY_SCRIPT
 
